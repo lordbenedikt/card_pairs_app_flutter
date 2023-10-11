@@ -1,0 +1,33 @@
+name: memory
+description: A new Flutter project.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.1.1 <4.0.0'
+
+dependencies:
+  animated_flip_card: ^1.0.2
+  flippy: ^0.1.1
+  flutter:
+    sdk: flutter
+  flutter_riverpod: ^2.4.3
+  yaml: ^3.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/alen_kindergarten.jpg
+    - assets/images/jina_and_beni_0.png
+    - assets/images/jina_and_beni_1.png
+    - assets/images/LINE_ALBUM_20220921_일본에온날__231011_1.jpg
+    - assets/images/LINE_ALBUM_20220923Mt.Aso_231011_1.jpg
+    - assets/images/LINE_ALBUM_문지나시집갔다_231011_1.jpg
+    - assets/images/LINE_ALBUM_문지나시집갔다_231011_4.jpg
+    - assets/images/LINE_ALBUM_예준이의성장일기_231011_1.jpg
+    - assets/images/Screenshot20231011102439.png
