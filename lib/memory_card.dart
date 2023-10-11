@@ -1,4 +1,4 @@
-import 'package:flippy/flippy.dart';
+import 'package:memory/flipper_customized/flippy.dart';
 import 'package:flutter/material.dart';
 
 class MemoryCard extends StatelessWidget {
