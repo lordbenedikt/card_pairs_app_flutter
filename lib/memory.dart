@@ -5,9 +5,10 @@ import 'package:memory/asset_path_provider.dart';
 import 'package:memory/memory_card.dart';
 
 class Memory extends StatefulWidget {
-  const Memory({super.key, required this.onRestart});
+  const Memory({super.key, required this.onRestart, this.numOfPairs = 14});
 
   final void Function() onRestart;
+  final int numOfPairs;
 
   @override
   State<Memory> createState() => _MemoryState();
@@ -20,8 +21,6 @@ class _MemoryState extends State<Memory> {
   int discoveredPairs = 0;
   bool doingPairCheck = false;
   bool gameOver = false;
-
-  static const numOfPairs = 2;
 
   void precacheImages(BuildContext context, List<String> paths) {
     for (var path in paths) {
@@ -63,6 +62,11 @@ class _MemoryState extends State<Memory> {
         //   }
         // });
         if (discoveredPairs * 2 == imagePaths.length) {
+          setState(() {
+            gameOver = true;
+          });
+        }
+        if (discoveredPairs * 2 == imagePaths.length) {
           Future.delayed(Duration(milliseconds: 2000), () {
             widget.onRestart();
           });
@@ -86,8 +90,8 @@ class _MemoryState extends State<Memory> {
       imagePaths = AssetsPathProvider.imagePaths;
       imagePaths.shuffle();
       imagePaths = [
-        ...imagePaths.sublist(0, numOfPairs),
-        ...imagePaths.sublist(0, numOfPairs),
+        ...imagePaths.sublist(0, widget.numOfPairs),
+        ...imagePaths.sublist(0, widget.numOfPairs),
       ];
       imagePaths.shuffle();
       activeCardIndices = [];
@@ -131,8 +135,13 @@ class _MemoryState extends State<Memory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(gameOver ? 'Congratulations!' : 'Can you find all pairs?'),
+        // backgroundColor: gameOver ? Colors.green : Colors.amber[300],
+        title: Text(
+          gameOver ? 'Congratulations!' : 'Can you find all pairs?',
+          textAlign: TextAlign.center,
+        ),
       ),
+      // backgroundColor: Colors.brown[200],
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 160,

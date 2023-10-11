@@ -24,6 +24,14 @@ class MemoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color backColor = Theme.of(context).colorScheme.secondaryContainer;
+    Color backColorDarker = Color.fromARGB(
+      255,
+      (backColor.red * 0.9).round(),
+      (backColor.green * 0.9).round(),
+      (backColor.blue * 0.9).round(),
+    );
+
     return Flipper(
       startFaceDown: true,
       width: width,
@@ -43,9 +51,21 @@ class MemoryCard extends StatelessWidget {
         ),
       ),
       back: Card(
-        color: Colors.blue[100],
+        clipBehavior: Clip.hardEdge,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(width / 15)),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                backColor,
+                backColorDarker,
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
