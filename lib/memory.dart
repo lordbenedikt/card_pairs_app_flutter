@@ -19,6 +19,8 @@ class _MemoryState extends State<Memory> {
   bool doingPairCheck = false;
   bool gameOver = false;
 
+  static const numOfPairs = 14;
+
   void precacheImages(BuildContext context, List<String> paths) {
     for (var path in paths) {
       precacheImage(AssetImage(path), context);
@@ -53,13 +55,16 @@ class _MemoryState extends State<Memory> {
       if (foundPair()) {
         activeCardIndices.clear();
         discoveredPairs++;
-        setState(() {
-          if (discoveredPairs * 2 == imagePaths.length) {
-            Future.delayed(Duration(milliseconds: 2000), () {
-              newGame();
-            });
-          }
-        });
+        // setState(() {
+        //   if (discoveredPairs * 2 == imagePaths.length) {
+        //     gameOver = true;
+        //   }
+        // });
+        if (discoveredPairs * 2 == imagePaths.length) {
+          Future.delayed(Duration(milliseconds: 2000), () {
+            setup();
+          });
+        }
       } else {
         doingPairCheck = true;
         Future.delayed(const Duration(milliseconds: 500), () {
@@ -74,9 +79,7 @@ class _MemoryState extends State<Memory> {
     }
   }
 
-  void newGame() {
-    const numOfPairs = 8;
-
+  void setup() {
     setState(() {
       imagePaths = AssetsPathProvider.imagePaths;
       imagePaths.shuffle();
@@ -86,7 +89,18 @@ class _MemoryState extends State<Memory> {
       ];
       imagePaths.shuffle();
       activeCardIndices = [];
-      cards = [];
+
+      cards = [
+        for (var i = 0; i < imagePaths.length; i++)
+          MemoryCard(
+            onTap: onTapCard,
+            cardIndex: i,
+            width: 160,
+            height: 160,
+            imageProvider: AssetImage(imagePaths[i]),
+            flipperController: FlipperController(dragAxis: DragAxis.vertical),
+          ),
+      ];
       discoveredPairs = 0;
       doingPairCheck = false;
       gameOver = false;
@@ -99,30 +113,30 @@ class _MemoryState extends State<Memory> {
 
   @override
   void initState() {
+    setup();
+
     super.initState();
   }
 
   @override
-  Widget build(BuildContext context) {
-    cards = [
-      for (var i = 0; i < imagePaths.length; i++)
-        MemoryCard(
-          onTap: onTapCard,
-          cardIndex: i,
-          width: 160,
-          height: 160,
-          imageProvider: AssetImage(imagePaths[i]),
-          flipperController: FlipperController(dragAxis: DragAxis.vertical),
-        ),
-    ];
+  void dispose() {
+    for (var card in cards) {
+      card.flipperController.dispose();
+    }
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(gameOver ? 'Congratulations!' : 'Can you find all pairs?'),
       ),
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200,
+          maxCrossAxisExtent: 160,
+          mainAxisExtent: 160,
+          mainAxisSpacing: 0,
         ),
         itemCount: imagePaths.length,
         itemBuilder: (context, index) {
