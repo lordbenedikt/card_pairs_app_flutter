@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'blurPainter.dart';
+import '../blurPainter.dart';
 
 class FlipperShadow extends StatelessWidget {
   const FlipperShadow(

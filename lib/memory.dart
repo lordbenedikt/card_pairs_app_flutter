@@ -5,7 +5,9 @@ import 'package:memory/asset_path_provider.dart';
 import 'package:memory/memory_card.dart';
 
 class Memory extends StatefulWidget {
-  const Memory({super.key});
+  const Memory({super.key, required this.onRestart});
+
+  final void Function() onRestart;
 
   @override
   State<Memory> createState() => _MemoryState();
@@ -19,7 +21,7 @@ class _MemoryState extends State<Memory> {
   bool doingPairCheck = false;
   bool gameOver = false;
 
-  static const numOfPairs = 14;
+  static const numOfPairs = 2;
 
   void precacheImages(BuildContext context, List<String> paths) {
     for (var path in paths) {
@@ -62,7 +64,7 @@ class _MemoryState extends State<Memory> {
         // });
         if (discoveredPairs * 2 == imagePaths.length) {
           Future.delayed(Duration(milliseconds: 2000), () {
-            setup();
+            widget.onRestart();
           });
         }
       } else {
@@ -114,7 +116,6 @@ class _MemoryState extends State<Memory> {
   @override
   void initState() {
     setup();
-
     super.initState();
   }
 
