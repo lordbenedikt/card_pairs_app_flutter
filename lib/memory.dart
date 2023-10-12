@@ -106,9 +106,7 @@ class _MemoryState extends State<Memory> {
             key: ValueKey('memory_card_$i'),
             onTap: onTapCard,
             cardIndex: i,
-            imageProvider: MemoryImage(
-              CompressedImageProvider.compressedImages[imagePaths[i]]!,
-            ),
+            imageProvider: AssetImage(imagePaths[i]),
             flipperController: FlipperController(dragAxis: DragAxis.vertical),
           ),
       ];
