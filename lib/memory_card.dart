@@ -4,15 +4,11 @@ import 'package:flutter/material.dart';
 class MemoryCard extends StatelessWidget {
   const MemoryCard(
       {super.key,
-      this.width = 200,
-      this.height = 200,
       required this.cardIndex,
       required this.imageProvider,
       required this.onTap,
       required this.flipperController});
 
-  final double width;
-  final double height;
   final int cardIndex;
   final ImageProvider imageProvider;
   final void Function(int) onTap;
@@ -32,41 +28,54 @@ class MemoryCard extends StatelessWidget {
       (backColor.blue * 0.9).round(),
     );
 
-    return Flipper(
-      startFaceDown: true,
-      width: width,
-      height: height,
-      margin: const EdgeInsets.all(0),
-      padding: EdgeInsets.all(width / 40),
-      showShadow: false,
-      backgroundColor: Colors.transparent,
-      controller: flipperController,
-      front: Card(
-        clipBehavior: Clip.hardEdge,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(width / 15)),
-        child: Image(
-          image: imageProvider,
-          fit: BoxFit.cover,
-        ),
-      ),
-      back: Card(
-        clipBehavior: Clip.hardEdge,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(width / 15)),
-        child: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                backColor,
-                backColorDarker,
-              ],
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GestureDetector(
+          onTap: () {
+            print('index: $cardIndex');
+            onTap(cardIndex);
+          },
+          child: Flipper(
+            startFaceDown: true,
+            width: constraints.maxWidth,
+            height: constraints.maxHeight,
+            margin: const EdgeInsets.all(0),
+            padding: const EdgeInsets.all(0),
+            showShadow: false,
+            backgroundColor: Colors.transparent,
+            controller: flipperController,
+            front: Card(
+              clipBehavior: Clip.hardEdge,
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(constraints.maxWidth / 15)),
+              child: Image(
+                // alignment: Alignment.topCenter,
+                image: imageProvider,
+                fit: BoxFit.cover,
+              ),
+            ),
+            back: Card(
+              clipBehavior: Clip.hardEdge,
+              shape: RoundedRectangleBorder(
+                  borderRadius:
+                      BorderRadius.circular(constraints.maxWidth / 15)),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      backColor,
+                      backColorDarker,
+                    ],
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

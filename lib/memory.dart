@@ -1,3 +1,4 @@
+import 'package:memory/custom_grid.dart';
 import 'package:memory/flipper_customized/flippy.dart';
 import 'package:flutter/material.dart';
 
@@ -5,10 +6,16 @@ import 'package:memory/image_provider.dart';
 import 'package:memory/memory_card.dart';
 
 class Memory extends StatefulWidget {
-  const Memory({super.key, required this.onRestart, this.numOfPairs = 14});
+  const Memory({
+    super.key,
+    required this.onRestart,
+    required this.cols,
+    required this.rows,
+  });
 
   final void Function() onRestart;
-  final int numOfPairs;
+  final int cols;
+  final int rows;
 
   @override
   State<Memory> createState() => _MemoryState();
@@ -84,29 +91,28 @@ class _MemoryState extends State<Memory> {
   }
 
   void setup() {
+    final numOfPairs = (widget.cols * widget.rows / 2).floor();
     setState(() {
       imagePaths = CompressedImageProvider.imagePaths;
       imagePaths.shuffle();
       imagePaths = [
-        ...imagePaths.sublist(0, widget.numOfPairs),
-        ...imagePaths.sublist(0, widget.numOfPairs),
+        ...imagePaths.sublist(0, numOfPairs),
+        ...imagePaths.sublist(0, numOfPairs),
       ];
       imagePaths.shuffle();
-      activeCardIndices = [];
-
       cards = [
         for (var i = 0; i < imagePaths.length; i++)
           MemoryCard(
+            key: ValueKey('memory_card_$i'),
             onTap: onTapCard,
             cardIndex: i,
-            width: 160,
-            height: 160,
             imageProvider: MemoryImage(
               CompressedImageProvider.compressedImages[imagePaths[i]]!,
             ),
             flipperController: FlipperController(dragAxis: DragAxis.vertical),
           ),
       ];
+      activeCardIndices = [];
       discoveredCards = [];
       doingPairCheck = false;
       gameOver = false;
@@ -142,21 +148,10 @@ class _MemoryState extends State<Memory> {
         ),
       ),
       // backgroundColor: Colors.brown[200],
-      body: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 160,
-          mainAxisExtent: 160,
-          mainAxisSpacing: 0,
-        ),
-        itemCount: imagePaths.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              onTapCard(index);
-            },
-            child: cards[index],
-          );
-        },
+      body: CustomGrid(
+        cols: widget.cols,
+        rows: widget.rows,
+        children: cards,
       ),
     );
   }

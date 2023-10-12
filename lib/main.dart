@@ -48,13 +48,17 @@ class _MemoryAppState extends State<MemoryApp> {
 
   @override
   Widget build(BuildContext context) {
-    final surfaceArea =
-        MediaQuery.of(context).size.width * MediaQuery.of(context).size.height;
-    final numOfPairs = (surfaceArea / 40000).round();
-    return Memory(
-      key: _key,
-      onRestart: replaceMemoryWidget,
-      numOfPairs: numOfPairs,
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      const minWidth = 150;
+      const minHeight = 150;
+      final cols = (constraints.maxWidth / minWidth).floor();
+      final rows = (constraints.maxHeight / minHeight).floor();
+      return Memory(
+        key: _key,
+        cols: cols,
+        rows: rows,
+        onRestart: replaceMemoryWidget,
+      );
+    });
   }
 }
