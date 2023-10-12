@@ -48,10 +48,13 @@ class _MemoryAppState extends State<MemoryApp> {
 
   @override
   Widget build(BuildContext context) {
+    final surfaceArea =
+        MediaQuery.of(context).size.width * MediaQuery.of(context).size.height;
+    final numOfPairs = (surfaceArea / 40000).round();
     return Memory(
       key: _key,
       onRestart: replaceMemoryWidget,
-      numOfPairs: (Platform.isAndroid || Platform.isIOS) ? 8 : 12,
+      numOfPairs: numOfPairs,
     );
   }
 }
