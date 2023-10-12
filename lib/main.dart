@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:memory/image_provider.dart';
 import 'package:memory/memory.dart';
 
+import 'dart:io' show Platform;
+
 var kColorScheme =
     ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 105, 63, 42));
 
@@ -46,6 +48,10 @@ class _MemoryAppState extends State<MemoryApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Memory(key: _key, onRestart: replaceMemoryWidget, numOfPairs: 12);
+    return Memory(
+      key: _key,
+      onRestart: replaceMemoryWidget,
+      numOfPairs: (Platform.isAndroid || Platform.isIOS) ? 8 : 12,
+    );
   }
 }

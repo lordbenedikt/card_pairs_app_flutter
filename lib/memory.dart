@@ -18,7 +18,7 @@ class _MemoryState extends State<Memory> {
   List<int> activeCardIndices = [];
   List<String> imagePaths = [];
   List<MemoryCard> cards = [];
-  int discoveredPairs = 0;
+  List<int> discoveredCards = [];
   bool doingPairCheck = false;
   bool gameOver = false;
 
@@ -54,19 +54,17 @@ class _MemoryState extends State<Memory> {
     // check for pairs, cover cards, clear selection, restart game
     if (activeCardIndices.length == 2 && !doingPairCheck) {
       if (foundPair()) {
+        discoveredCards.addAll(activeCardIndices);
         activeCardIndices.clear();
-        discoveredPairs++;
         // setState(() {
         //   if (discoveredPairs * 2 == imagePaths.length) {
         //     gameOver = true;
         //   }
         // });
-        if (discoveredPairs * 2 == imagePaths.length) {
+        if (discoveredCards.length == imagePaths.length) {
           setState(() {
             gameOver = true;
           });
-        }
-        if (discoveredPairs * 2 == imagePaths.length) {
           Future.delayed(const Duration(milliseconds: 2000), () {
             widget.onRestart();
           });
@@ -109,7 +107,7 @@ class _MemoryState extends State<Memory> {
             flipperController: FlipperController(dragAxis: DragAxis.vertical),
           ),
       ];
-      discoveredPairs = 0;
+      discoveredCards = [];
       doingPairCheck = false;
       gameOver = false;
     });
