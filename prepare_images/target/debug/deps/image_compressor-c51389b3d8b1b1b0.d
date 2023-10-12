@@ -1,0 +1,8 @@
+C:\Users\Benedikt Jensen\Documents\flutter_complete_guide\memory\prepare_images\target\debug\deps\image_compressor-c51389b3d8b1b1b0.rmeta: C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\lib.rs C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\compressor.rs C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\crawler.rs C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\dir.rs
+
+C:\Users\Benedikt Jensen\Documents\flutter_complete_guide\memory\prepare_images\target\debug\deps\image_compressor-c51389b3d8b1b1b0.d: C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\lib.rs C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\compressor.rs C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\crawler.rs C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\dir.rs
+
+C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\lib.rs:
+C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\compressor.rs:
+C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\crawler.rs:
+C:\Users\Benedikt\ Jensen\.cargo\registry\src\index.crates.io-6f17d22bba15001f\image_compressor-1.3.0\src\dir.rs:
