@@ -1,7 +1,7 @@
 import 'package:memory/flipper_customized/flippy.dart';
 import 'package:flutter/material.dart';
 
-import 'package:memory/asset_path_provider.dart';
+import 'package:memory/image_provider.dart';
 import 'package:memory/memory_card.dart';
 
 class Memory extends StatefulWidget {
@@ -67,7 +67,7 @@ class _MemoryState extends State<Memory> {
           });
         }
         if (discoveredPairs * 2 == imagePaths.length) {
-          Future.delayed(Duration(milliseconds: 2000), () {
+          Future.delayed(const Duration(milliseconds: 2000), () {
             widget.onRestart();
           });
         }
@@ -87,7 +87,7 @@ class _MemoryState extends State<Memory> {
 
   void setup() {
     setState(() {
-      imagePaths = AssetsPathProvider.imagePaths;
+      imagePaths = CompressedImageProvider.imagePaths;
       imagePaths.shuffle();
       imagePaths = [
         ...imagePaths.sublist(0, widget.numOfPairs),
@@ -103,7 +103,9 @@ class _MemoryState extends State<Memory> {
             cardIndex: i,
             width: 160,
             height: 160,
-            imageProvider: AssetImage(imagePaths[i]),
+            imageProvider: MemoryImage(
+              CompressedImageProvider.compressedImages[imagePaths[i]]!,
+            ),
             flipperController: FlipperController(dragAxis: DragAxis.vertical),
           ),
       ];

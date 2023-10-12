@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:memory/asset_path_provider.dart';
+import 'package:memory/image_provider.dart';
 import 'package:memory/memory.dart';
 
 var kColorScheme =
@@ -13,7 +13,7 @@ var kDarkColorScheme = ColorScheme.fromSeed(
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await AssetsPathProvider.init();
+  await CompressedImageProvider.init();
 
   runApp(
     MaterialApp(
@@ -23,7 +23,7 @@ void main() async {
       theme: ThemeData().copyWith(
         colorScheme: kColorScheme,
       ),
-      home: MemoryApp(),
+      home: const MemoryApp(),
     ),
   );
 }
