@@ -365,6 +365,7 @@ dependencies = [
 name = "prepare_images"
 version = "0.1.0"
 dependencies = [
+ "image",
  "image_compressor",
 ]
 
