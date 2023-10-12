@@ -15,7 +15,7 @@ var kDarkColorScheme = ColorScheme.fromSeed(
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await CompressedImageProvider.init();
+  await ImagePathProvider.init();
 
   runApp(
     MaterialApp(

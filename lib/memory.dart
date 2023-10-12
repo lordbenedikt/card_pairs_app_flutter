@@ -93,7 +93,7 @@ class _MemoryState extends State<Memory> {
   void setup() {
     final numOfPairs = (widget.cols * widget.rows / 2).floor();
     setState(() {
-      imagePaths = CompressedImageProvider.imagePaths;
+      imagePaths = ImagePathProvider.imagePaths;
       imagePaths.shuffle();
       imagePaths = [
         ...imagePaths.sublist(0, numOfPairs),
