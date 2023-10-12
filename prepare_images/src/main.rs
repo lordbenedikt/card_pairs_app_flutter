@@ -11,11 +11,10 @@ extern crate image;
 extern crate image_compressor;
 
 use image::GenericImageView;
-use image::ImageOutputFormat;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Directory path of the .assets/images folder
-    let original_images_dir = "../assets/images";
+    let original_images_dir = "../assets/images/original";
     let resized_images_dir = "../assets/images/resized";
     let compressed_images_dir = "../assets/images/compressed";
 
