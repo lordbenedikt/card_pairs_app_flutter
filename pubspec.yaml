@@ -8,11 +8,19 @@ environment:
 
 dependencies:
   animated_flip_card: ^1.0.2
+  cloud_firestore: ^4.12.0
+  firebase_auth: ^4.12.0
+  firebase_core: ^2.20.0
+  firebase_storage: ^11.4.0
   flippy: ^0.1.1
   flutter:
     sdk: flutter
   flutter_image_compress: ^2.0.4
   flutter_riverpod: ^2.4.3
+  flutter_svg: ^2.0.8
+  font_awesome_flutter: ^10.6.0
+  image_picker: ^1.0.4
+  uuid: ^4.1.0
   yaml: ^3.1.2
 
 dev_dependencies:
@@ -23,6 +31,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/images/cards_icon.svg
     - assets/images/resized/03A3D74FD28543A8869F3CEF3CEDA702.jpg
     - assets/images/resized/0870136AF5EF48A1A8DDF691446D77FB.jpg
     - assets/images/resized/0F24B3AF97C44EF88377F32C7DEC80F0.jpg

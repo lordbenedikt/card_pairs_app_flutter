@@ -1,9 +1,11 @@
-import 'package:memory/custom_grid.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:memory/screens/new_set.dart';
+import 'package:memory/widgets/custom_grid.dart';
 import 'package:memory/flipper_customized/flippy.dart';
 import 'package:flutter/material.dart';
 
 import 'package:memory/image_provider.dart';
-import 'package:memory/memory_card.dart';
+import 'package:memory/widgets/memory_card.dart';
 
 class Memory extends StatefulWidget {
   const Memory({
@@ -144,6 +146,21 @@ class _MemoryState extends State<Memory> {
           gameOver ? 'Congratulations!' : 'Can you find all pairs?',
           textAlign: TextAlign.center,
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+              },
+              icon: const Icon(Icons.logout)),
+          IconButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return const NewSet();
+                }));
+              },
+              icon: const Icon(Icons.add)),
+        ],
       ),
       // backgroundColor: Colors.brown[200],
       body: CustomGrid(

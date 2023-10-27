@@ -1,11 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:memory/firebase_options.dart';
 import 'package:memory/image_provider.dart';
-import 'package:memory/memory.dart';
+import 'package:memory/screens/auth.dart';
+import 'package:memory/screens/memory.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-import 'dart:io' show Platform;
+import 'package:memory/screens/splash.dart';
 
-var kColorScheme =
-    ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 105, 63, 42));
+var kColorScheme = ColorScheme.fromSeed(
+  seedColor: const Color.fromARGB(255, 105, 63, 42),
+);
 
 var kDarkColorScheme = ColorScheme.fromSeed(
   brightness: Brightness.dark,
@@ -14,8 +19,11 @@ var kDarkColorScheme = ColorScheme.fromSeed(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await ImagePathProvider.init();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   runApp(
     MaterialApp(
@@ -25,7 +33,20 @@ void main() async {
       theme: ThemeData().copyWith(
         colorScheme: kColorScheme,
       ),
-      home: const MemoryApp(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (ctx, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SplashScreen();
+          }
+
+          if (snapshot.hasData) {
+            return const MemoryApp();
+          }
+
+          return const AuthScreen();
+        },
+      ),
     ),
   );
 }
