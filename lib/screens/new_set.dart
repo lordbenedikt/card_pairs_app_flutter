@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +11,14 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:memory/widgets/gallery_grid.dart';
 import 'package:uuid/v4.dart';
 
-class NewSet extends StatefulWidget {
-  const NewSet({super.key});
+class NewSetScreen extends StatefulWidget {
+  const NewSetScreen({super.key});
 
   @override
-  State<NewSet> createState() => _NewSetState();
+  State<NewSetScreen> createState() => _NewSetScreenState();
 }
 
-class _NewSetState extends State<NewSet> {
+class _NewSetScreenState extends State<NewSetScreen> {
   final List<File> _pickedImages = [];
   final List<int> _selectedImages = [];
   File? _pickedCoverImage;
@@ -45,15 +46,15 @@ class _NewSetState extends State<NewSet> {
         imageUrls.add(await storageRef.getDownloadURL());
       }
 
-      // FirebaseFirestore.instance
-      //     .collection('users')
-      //     .doc(userCredentials.user!.uid)
-      //     .set({
-      //   'email': _enteredEmail,
-      //   'username': _enteredUsername,
-      //   'image_url': imageUrl,
-      // });
-      Navigator.of(context).pop();
+      FirebaseFirestore.instance.collection('card_sets').add({
+        'owner': FirebaseAuth.instance.currentUser!.uid,
+        'image_urls': imageUrls,
+        'groups_that_can_view': [],
+      });
+
+      if (context.mounted) {
+        Navigator.of(context).pop();
+      }
     }
   }
 
@@ -146,7 +147,8 @@ class _NewSetState extends State<NewSet> {
           textAlign: TextAlign.center,
         ),
         actions: [
-          if (_selectedImages.length == _pickedImages.length)
+          if (_selectedImages.length == _pickedImages.length &&
+              _pickedImages.isNotEmpty)
             IconButton(
               tooltip: 'clear selection',
               onPressed: () {

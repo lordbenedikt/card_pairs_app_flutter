@@ -27,7 +27,7 @@ class ImagePathProvider {
 
     allAssetPaths = manifest.keys.toList();
     imagePaths = allAssetPaths
-        .where((path) => path.startsWith('assets/images'))
+        .where((path) => path.startsWith('assets/images/resized/'))
         .toList();
 
     // for (var path in imagePaths) {

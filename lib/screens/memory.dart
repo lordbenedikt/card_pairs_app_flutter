@@ -7,29 +7,86 @@ import 'package:flutter/material.dart';
 import 'package:memory/image_provider.dart';
 import 'package:memory/widgets/memory_card.dart';
 
-class Memory extends StatefulWidget {
-  const Memory({
+class MemoryScreen extends StatefulWidget {
+  const MemoryScreen({
     super.key,
-    required this.onRestart,
-    required this.cols,
-    required this.rows,
   });
 
-  final void Function() onRestart;
-  final int cols;
-  final int rows;
-
   @override
-  State<Memory> createState() => _MemoryState();
+  State<MemoryScreen> createState() => _MemoryScreenState();
 }
 
-class _MemoryState extends State<Memory> {
+class _MemoryScreenState extends State<MemoryScreen> {
+  bool gameOver = false;
+  Key _key = UniqueKey();
+
+  void restart() {
+    setState(() {
+      gameOver = false;
+    });
+    replaceMemoryWidget();
+  }
+
+  void replaceMemoryWidget() {
+    setState(() {
+      _key = UniqueKey();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor:
+            gameOver ? Colors.green : Theme.of(context).colorScheme.primary,
+        centerTitle: true,
+        title: Text(
+          gameOver ? 'Congratulations!' : 'Can you find all pairs?',
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          IconButton(
+            onPressed: restart,
+            icon: const Icon(Icons.replay),
+          ),
+        ],
+      ),
+      // backgroundColor: Colors.brown[200],
+      body: MemoryScreenBody(
+        key: _key,
+        onRestart: restart,
+        onGameOver: () {
+          setState(() => gameOver = true);
+        },
+      ),
+    );
+  }
+}
+
+class MemoryScreenBody extends StatefulWidget {
+  const MemoryScreenBody({
+    super.key,
+    required this.onGameOver,
+    required this.onRestart,
+  });
+
+  final void Function() onGameOver;
+  final void Function() onRestart;
+
+  @override
+  State<MemoryScreenBody> createState() => _MemoryScreenBodyState();
+}
+
+class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   List<int> activeCardIndices = [];
   List<String> imagePaths = [];
   List<MemoryCard> cards = [];
   List<int> discoveredCards = [];
   bool doingPairCheck = false;
-  bool gameOver = false;
+  bool setupDone = false;
+
+  late final int cols;
+  late final int rows;
 
   void precacheImages(BuildContext context, List<String> paths) {
     for (var path in paths) {
@@ -65,68 +122,59 @@ class _MemoryState extends State<Memory> {
       if (foundPair()) {
         discoveredCards.addAll(activeCardIndices);
         activeCardIndices.clear();
-        // setState(() {
-        //   if (discoveredPairs * 2 == imagePaths.length) {
-        //     gameOver = true;
-        //   }
-        // });
         if (discoveredCards.length == imagePaths.length) {
-          setState(() {
-            gameOver = true;
-          });
+          widget.onGameOver();
           Future.delayed(const Duration(milliseconds: 2000), () {
             widget.onRestart();
           });
         }
       } else {
         doingPairCheck = true;
-        Future.delayed(const Duration(milliseconds: 500), () {
-          cards[activeCardIndices[0]].flipperController.flipDown();
+        final mustFlipDown = [
+          cards[activeCardIndices[0]],
+          cards[activeCardIndices[1]],
+        ];
+        Future.delayed(const Duration(milliseconds: 300), () {
+          activeCardIndices.clear();
+          doingPairCheck = false;
+        });
+        Future.delayed(const Duration(milliseconds: 700), () {
+          mustFlipDown[0].flipperController.flipDown();
           Future.delayed(const Duration(milliseconds: 100), () {
-            cards[activeCardIndices[1]].flipperController.flipDown();
-            activeCardIndices.clear();
-            doingPairCheck = false;
+            mustFlipDown[1].flipperController.flipDown();
           });
         });
       }
     }
   }
 
-  void setup() {
-    final numOfPairs = (widget.cols * widget.rows / 2).floor();
-    setState(() {
-      imagePaths = ImagePathProvider.imagePaths;
-      imagePaths.shuffle();
-      imagePaths = [
-        ...imagePaths.sublist(0, numOfPairs),
-        ...imagePaths.sublist(0, numOfPairs),
-      ];
-      imagePaths.shuffle();
-      cards = [
-        for (var i = 0; i < imagePaths.length; i++)
-          MemoryCard(
-            key: ValueKey('memory_card_$i'),
-            onTap: onTapCard,
-            cardIndex: i,
-            imageProvider: AssetImage(imagePaths[i]),
-            flipperController: FlipperController(dragAxis: DragAxis.vertical),
-          ),
-      ];
-      activeCardIndices = [];
-      discoveredCards = [];
-      doingPairCheck = false;
-      gameOver = false;
-    });
+  void setup(BoxConstraints constraints) {
+    const minWidth = 150;
+    const minHeight = 150;
+    cols = (constraints.maxWidth / minWidth).floor();
+    rows = (constraints.maxHeight / minHeight).floor();
+    final numOfPairs = (cols * rows / 2).floor();
+    imagePaths = ImagePathProvider.imagePaths;
+    imagePaths.shuffle();
+    imagePaths = [
+      ...imagePaths.sublist(0, numOfPairs),
+      ...imagePaths.sublist(0, numOfPairs),
+    ];
+    imagePaths.shuffle();
+    cards = [
+      for (var i = 0; i < imagePaths.length; i++)
+        MemoryCard(
+          key: ValueKey('memory_card_$i'),
+          onTap: onTapCard,
+          cardIndex: i,
+          imageProvider: AssetImage(imagePaths[i]),
+          flipperController: FlipperController(dragAxis: DragAxis.vertical),
+        ),
+    ];
 
     Future.delayed(Duration.zero, () {
       precacheImages(context, imagePaths);
     });
-  }
-
-  @override
-  void initState() {
-    setup();
-    super.initState();
   }
 
   @override
@@ -139,35 +187,18 @@ class _MemoryState extends State<Memory> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        // backgroundColor: gameOver ? Colors.green : Colors.amber[300],
-        title: Text(
-          gameOver ? 'Congratulations!' : 'Can you find all pairs?',
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-              },
-              icon: const Icon(Icons.logout)),
-          IconButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) {
-                  return const NewSet();
-                }));
-              },
-              icon: const Icon(Icons.add)),
-        ],
-      ),
-      // backgroundColor: Colors.brown[200],
-      body: CustomGrid(
-        cols: widget.cols,
-        rows: widget.rows,
-        children: cards,
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (!setupDone) {
+          setup(constraints);
+          setupDone = true;
+        }
+        return CustomGrid(
+          cols: cols,
+          rows: rows,
+          children: cards,
+        );
+      },
     );
   }
 }
