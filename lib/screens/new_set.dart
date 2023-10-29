@@ -6,13 +6,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:memory/widgets/cover_image_picker.dart';
+import 'package:memory/models/card_set.dart';
+import 'package:memory/models/group.dart';
+import 'package:memory/widgets/circular_image_picker.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:memory/widgets/gallery_grid.dart';
 import 'package:uuid/v4.dart';
 
 class NewSetScreen extends StatefulWidget {
-  const NewSetScreen({super.key});
+  const NewSetScreen({required this.group, super.key});
+
+  final Group group;
 
   @override
   State<NewSetScreen> createState() => _NewSetScreenState();
@@ -31,30 +35,49 @@ class _NewSetScreenState extends State<NewSetScreen> {
 
   void _submit() async {
     final isValid = _form.currentState!.validate();
-    if (isValid) {
-      _form.currentState!.save();
-      final storageRefParent = FirebaseStorage.instance
-          .ref()
-          .child(FirebaseAuth.instance.currentUser!.uid);
 
-      final List<String> imageUrls = [];
+    if (!isValid || _pickedCoverImage == null) {
+      return;
+    }
 
-      for (final image in _pickedImages) {
-        final storageRef =
-            storageRefParent.child('${DateTime.now().toIso8601String()}.jpg');
-        await storageRef.putFile(image);
-        imageUrls.add(await storageRef.getDownloadURL());
-      }
+    setState(() {
+      _isLoading = true;
+    });
 
-      FirebaseFirestore.instance.collection('card_sets').add({
-        'owner': FirebaseAuth.instance.currentUser!.uid,
-        'image_urls': imageUrls,
-        'groups_that_can_view': [],
-      });
+    _form.currentState!.save();
+    final storageRefParent = FirebaseStorage.instance
+        .ref()
+        .child('by_${FirebaseAuth.instance.currentUser!.uid}')
+        .child('card_set_${widget.group.uid}');
 
-      if (context.mounted) {
-        Navigator.of(context).pop();
-      }
+    final List<String> imageUrls = [];
+
+    for (final image in _pickedImages) {
+      final storageRef =
+          storageRefParent.child('${DateTime.now().toIso8601String()}.png');
+      await storageRef.putFile(
+          image, SettableMetadata(contentType: 'image/png'));
+      imageUrls.add(await storageRef.getDownloadURL());
+    }
+
+    final storageRef =
+        storageRefParent.child('${DateTime.now().toIso8601String()}.png');
+    await storageRef.putFile(
+        _pickedCoverImage!, SettableMetadata(contentType: 'image/png'));
+    final coverImageUrl = await storageRef.getDownloadURL();
+
+    final uid = const UuidV4().generate();
+    FirebaseFirestore.instance.collection('card_sets').doc(uid).set(CardSet(
+          uid: uid,
+          title: _pickedTitle,
+          imageUrls: imageUrls,
+          coverImageUrl: coverImageUrl,
+          owner: FirebaseAuth.instance.currentUser!.uid,
+          groupsThatCanView: [widget.group.uid],
+        ).toMap());
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
     }
   }
 
@@ -75,7 +98,7 @@ class _NewSetScreenState extends State<NewSetScreen> {
 
     final pickedMultiImage = await ImagePicker().pickMultiImage(
       imageQuality: 50,
-      maxWidth: 300,
+      maxWidth: 800,
     );
 
     setState(() {
@@ -219,9 +242,11 @@ class _NewSetScreenState extends State<NewSetScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    CoverImagePicker(onPickImage: (file) {
-                      _pickedCoverImage = file;
-                    }),
+                    CircularImagePicker(
+                        onPickImage: (file) {
+                          _pickedCoverImage = file;
+                        },
+                        label: 'Add cover image'),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(

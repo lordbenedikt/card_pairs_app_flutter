@@ -66,6 +66,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .collection('users')
             .doc(userCredentials.user!.uid)
             .set({
+          'uid': userCredentials.user!.uid,
           'email': _enteredEmail,
           'username': _enteredUsername,
           'image_url': imageUrl,

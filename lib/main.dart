@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:memory/firebase_options.dart';
-import 'package:memory/image_provider.dart';
+import 'package:memory/providers/image_provider.dart';
 import 'package:memory/screens/auth.dart';
-import 'package:memory/screens/main_screen.dart';
+import 'package:memory/screens/group_list.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:memory/screens/splash.dart';
@@ -41,7 +41,7 @@ void main() async {
           }
 
           if (snapshot.hasData) {
-            return const MainScreen();
+            return const GroupListScreen();
           }
 
           return const AuthScreen();

@@ -4,13 +4,16 @@ import 'package:memory/widgets/custom_grid.dart';
 import 'package:memory/flipper_customized/flippy.dart';
 import 'package:flutter/material.dart';
 
-import 'package:memory/image_provider.dart';
+import 'package:memory/providers/image_provider.dart';
 import 'package:memory/widgets/memory_card.dart';
 
 class MemoryScreen extends StatefulWidget {
   const MemoryScreen({
     super.key,
+    required this.setUid,
   });
+
+  final String setUid;
 
   @override
   State<MemoryScreen> createState() => _MemoryScreenState();
@@ -134,7 +137,7 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
           cards[activeCardIndices[0]],
           cards[activeCardIndices[1]],
         ];
-        Future.delayed(const Duration(milliseconds: 300), () {
+        Future.delayed(const Duration(milliseconds: 100), () {
           activeCardIndices.clear();
           doingPairCheck = false;
         });
