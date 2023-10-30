@@ -31,7 +31,10 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
   }
 
   List<AppUser> getFilteredUsers(List<AppUser> users, String searchString) {
-    final res = users.where((user) => !selectedUsers.contains(user)).toList();
+    final res = users
+        .where((user) => !selectedUsers.contains(user))
+        .where((user) => user.uid != FirebaseAuth.instance.currentUser!.uid)
+        .toList();
     if (searchString.trim().isEmpty) return res;
     return res
         .where((user) =>
