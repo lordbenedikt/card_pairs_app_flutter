@@ -47,23 +47,23 @@ class _NewSetScreenState extends State<NewSetScreen> {
     _form.currentState!.save();
     final storageRefParent = FirebaseStorage.instance
         .ref()
-        .child('by_${FirebaseAuth.instance.currentUser!.uid}')
-        .child('card_set_${widget.group.uid}');
+        .child('owned_data')
+        .child(FirebaseAuth.instance.currentUser!.uid)
+        .child('card_sets')
+        .child(widget.group.uid);
 
     final List<String> imageUrls = [];
 
     for (final image in _pickedImages) {
       final storageRef =
-          storageRefParent.child('${DateTime.now().toIso8601String()}.png');
-      await storageRef.putFile(
-          image, SettableMetadata(contentType: 'image/png'));
+          storageRefParent.child('${const UuidV4().generate()}.png');
+      await storageRef.putFile(image);
       imageUrls.add(await storageRef.getDownloadURL());
     }
 
     final storageRef =
-        storageRefParent.child('${DateTime.now().toIso8601String()}.png');
-    await storageRef.putFile(
-        _pickedCoverImage!, SettableMetadata(contentType: 'image/png'));
+        storageRefParent.child('${const UuidV4().generate()}.png');
+    await storageRef.putFile(_pickedCoverImage!);
     final coverImageUrl = await storageRef.getDownloadURL();
 
     final uid = const UuidV4().generate();
@@ -74,7 +74,7 @@ class _NewSetScreenState extends State<NewSetScreen> {
           coverImageUrl: coverImageUrl,
           owner: FirebaseAuth.instance.currentUser!.uid,
           groupsThatCanView: [widget.group.uid],
-        ).toMap());
+        ).toJson());
 
     if (context.mounted) {
       Navigator.of(context).pop();
@@ -234,7 +234,7 @@ class _NewSetScreenState extends State<NewSetScreen> {
                       }
                       return null;
                     },
-                    decoration: InputDecoration(label: Text("Title")),
+                    decoration: const InputDecoration(label: Text("Title")),
                   ),
                 ),
               ),
@@ -243,9 +243,17 @@ class _NewSetScreenState extends State<NewSetScreen> {
                 child: Row(
                   children: [
                     CircularImagePicker(
-                        onPickImage: (file) {
-                          _pickedCoverImage = file;
-                        },
+                        onStart: () => setState(() {
+                              _isLoading = true;
+                            }),
+                        onPickImage: _isLoading
+                            ? null
+                            : (file) {
+                                _pickedCoverImage = file;
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              },
                         label: 'Add cover image'),
                     const SizedBox(width: 16),
                     Expanded(

@@ -1,5 +1,9 @@
 import 'package:memory/models/card_set.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'group.g.dart';
+
+@JsonSerializable()
 class Group {
   Group({
     required this.uid,
@@ -16,25 +20,7 @@ class Group {
   List<CardSet> availableSets;
   String imageUrl;
 
-  static Group fromMap(Map<String, dynamic> map) {
-    return Group(
-      uid: map['uid'],
-      title: map['title'],
-      admin: map['admin'],
-      members: [...map['members']],
-      availableSets: [...map['available_sets']],
-      imageUrl: map['image'],
-    );
-  }
+  factory Group.fromJson(Map<String, dynamic> json) => _$GroupFromJson(json);
 
-  Map<String, dynamic> toMap() {
-    return {
-      'uid': uid,
-      'title': title,
-      'admin': admin,
-      'members': members,
-      'available_sets': availableSets,
-      'image': imageUrl,
-    };
-  }
+  Map<String, dynamic> toJson() => _$GroupToJson(this);
 }

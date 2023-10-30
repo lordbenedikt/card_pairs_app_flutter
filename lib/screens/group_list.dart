@@ -73,7 +73,7 @@ class _GroupListScreenState extends State<GroupListScreen> {
               return ListView.builder(
                   itemCount: groups.length,
                   itemBuilder: (context, index) {
-                    final group = Group.fromMap(groups[index].data());
+                    final group = Group.fromJson(groups[index].data());
                     return ListTile(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(

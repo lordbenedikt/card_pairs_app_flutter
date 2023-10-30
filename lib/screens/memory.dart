@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:memory/models/card_set.dart';
 import 'package:memory/screens/new_set.dart';
 import 'package:memory/widgets/custom_grid.dart';
 import 'package:memory/flipper_customized/flippy.dart';
@@ -10,10 +11,10 @@ import 'package:memory/widgets/memory_card.dart';
 class MemoryScreen extends StatefulWidget {
   const MemoryScreen({
     super.key,
-    required this.setUid,
+    required this.cardSet,
   });
 
-  final String setUid;
+  final CardSet cardSet;
 
   @override
   State<MemoryScreen> createState() => _MemoryScreenState();
@@ -57,6 +58,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
       // backgroundColor: Colors.brown[200],
       body: MemoryScreenBody(
         key: _key,
+        cardSet: widget.cardSet,
         onRestart: restart,
         onGameOver: () {
           setState(() => gameOver = true);
@@ -69,10 +71,12 @@ class _MemoryScreenState extends State<MemoryScreen> {
 class MemoryScreenBody extends StatefulWidget {
   const MemoryScreenBody({
     super.key,
+    required this.cardSet,
     required this.onGameOver,
     required this.onRestart,
   });
 
+  final CardSet cardSet;
   final void Function() onGameOver;
   final void Function() onRestart;
 
@@ -82,7 +86,7 @@ class MemoryScreenBody extends StatefulWidget {
 
 class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   List<int> activeCardIndices = [];
-  List<String> imagePaths = [];
+  List<String> imageUrls = [];
   List<MemoryCard> cards = [];
   List<int> discoveredCards = [];
   bool doingPairCheck = false;
@@ -91,15 +95,15 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   late final int cols;
   late final int rows;
 
-  void precacheImages(BuildContext context, List<String> paths) {
-    for (var path in paths) {
-      precacheImage(AssetImage(path), context);
+  void precacheImages(BuildContext context, List<String> urls) {
+    for (var url in urls) {
+      precacheImage(NetworkImage(url), context);
     }
   }
 
   bool foundPair() {
     if (activeCardIndices.length < 2) return false;
-    return imagePaths[activeCardIndices[0]] == imagePaths[activeCardIndices[1]];
+    return imageUrls[activeCardIndices[0]] == imageUrls[activeCardIndices[1]];
   }
 
   void onTapCard(int index) {
@@ -125,7 +129,7 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
       if (foundPair()) {
         discoveredCards.addAll(activeCardIndices);
         activeCardIndices.clear();
-        if (discoveredCards.length == imagePaths.length) {
+        if (discoveredCards.length == imageUrls.length) {
           widget.onGameOver();
           Future.delayed(const Duration(milliseconds: 2000), () {
             widget.onRestart();
@@ -157,26 +161,26 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
     cols = (constraints.maxWidth / minWidth).floor();
     rows = (constraints.maxHeight / minHeight).floor();
     final numOfPairs = (cols * rows / 2).floor();
-    imagePaths = ImagePathProvider.imagePaths;
-    imagePaths.shuffle();
-    imagePaths = [
-      ...imagePaths.sublist(0, numOfPairs),
-      ...imagePaths.sublist(0, numOfPairs),
+    imageUrls = widget.cardSet.imageUrls;
+    imageUrls.shuffle();
+    imageUrls = [
+      ...imageUrls.sublist(0, numOfPairs),
+      ...imageUrls.sublist(0, numOfPairs),
     ];
-    imagePaths.shuffle();
+    imageUrls.shuffle();
     cards = [
-      for (var i = 0; i < imagePaths.length; i++)
+      for (var i = 0; i < imageUrls.length; i++)
         MemoryCard(
           key: ValueKey('memory_card_$i'),
           onTap: onTapCard,
           cardIndex: i,
-          imageProvider: AssetImage(imagePaths[i]),
+          imageProvider: NetworkImage(imageUrls[i]),
           flipperController: FlipperController(dragAxis: DragAxis.vertical),
         ),
     ];
 
     Future.delayed(Duration.zero, () {
-      precacheImages(context, imagePaths);
+      precacheImages(context, imageUrls);
     });
   }
 

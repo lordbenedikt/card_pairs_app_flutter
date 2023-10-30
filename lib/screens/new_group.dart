@@ -44,7 +44,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
     final List<AppUser> res = [];
     final allUsers = await FirebaseFirestore.instance.collection('users').get();
     for (final user in allUsers.docs) {
-      res.add(AppUser.fromMap(user.data()));
+      res.add(AppUser.fromJson(user.data()));
     }
     return res;
   }
@@ -67,6 +67,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
 
     final admin = FirebaseAuth.instance.currentUser!.uid;
     final members = selectedUsers.map((user) => user.uid).toList();
+    members.add(admin);
 
     final groupUid = const UuidV4().generate();
 
@@ -85,7 +86,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
           members: members,
           availableSets: [],
           imageUrl: imageUrl,
-        ).toMap());
+        ).toJson());
 
     if (context.mounted) {
       Navigator.of(context).pop();

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/models/group.dart';
+import 'package:memory/providers/sqflite_helper.dart';
 import 'package:memory/screens/memory.dart';
 import 'package:memory/screens/new_set.dart';
 
@@ -30,7 +31,7 @@ class SetListScreen extends StatelessWidget {
       body: StreamBuilder(
           stream: FirebaseFirestore.instance
               .collection('card_sets')
-              .where('groups_that_can_view', arrayContains: group.uid)
+              // .where('groups_that_can_view', arrayContains: group.uid)
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -51,11 +52,28 @@ class SetListScreen extends StatelessWidget {
                   crossAxisCount: 2),
               itemCount: sets.length,
               itemBuilder: (context, index) {
-                final set = CardSet.fromMap(sets[index].data());
+                // print(sets[index].data());
+                final set = CardSet.fromJson(sets[index].data());
                 return GestureDetector(
                   onTap: () {
+                    SqfliteHelper.addCardSet(set);
+
                     Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => MemoryScreen(setUid: set.uid),
+                      builder: (context) {
+                        //     // SqfliteHelper.addCardSet(set);
+                        //     // SqfliteHelper.getCardSets().then((cardSets) {
+                        //     //   print('get sets');
+                        //     //   for (final cardSet in cardSets) {
+                        //     //     print(cardSet.owner);
+                        //     //     print(cardSet.title);
+                        //     //     print(cardSet.imageUrls);
+                        //     //     print(cardSet.groupsThatCanView);
+                        //     //     print(cardSet.coverImageUrl);
+                        //     //     print(cardSet.uid);
+                        //     //   }
+                        //     // });
+                        return MemoryScreen(cardSet: set);
+                      },
                     ));
                   },
                   child: Container(
@@ -85,7 +103,7 @@ class SetListScreen extends StatelessWidget {
                             child: Column(
                               children: [
                                 Text(
-                                  'Hey',
+                                  set.title,
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme

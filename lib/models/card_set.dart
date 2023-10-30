@@ -1,3 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'card_set.g.dart';
+
+@JsonSerializable()
 class CardSet {
   CardSet({
     required this.uid,
@@ -14,25 +19,8 @@ class CardSet {
   String owner;
   List<String> groupsThatCanView;
 
-  static CardSet fromMap(Map<String, dynamic> map) {
-    return CardSet(
-      uid: map['uid'],
-      title: map['title'],
-      imageUrls: [...map['card_images']],
-      owner: map['owner'],
-      coverImageUrl: map['cover_image'],
-      groupsThatCanView: [...map['groups_that_can_view']],
-    );
-  }
+  factory CardSet.fromJson(Map<String, dynamic> json) =>
+      _$CardSetFromJson(json);
 
-  Map<String, dynamic> toMap() {
-    return {
-      'uid': uid,
-      'title': title,
-      'owner': owner,
-      'card_images': imageUrls,
-      'cover_image': coverImageUrl,
-      'groups_that_can_view': groupsThatCanView,
-    };
-  }
+  Map<String, dynamic> toJson() => _$CardSetToJson(this);
 }

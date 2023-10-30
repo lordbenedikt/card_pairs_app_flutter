@@ -7,11 +7,13 @@ class CircularImagePicker extends StatefulWidget {
   const CircularImagePicker({
     super.key,
     required this.onPickImage,
+    this.onStart,
     this.label,
     this.radius = 60,
   });
 
-  final void Function(File pickedImage) onPickImage;
+  final void Function(File pickedImage)? onPickImage;
+  final void Function()? onStart;
   final String? label;
   final double radius;
 
@@ -23,6 +25,7 @@ class _CircularImagePickerState extends State<CircularImagePicker> {
   File? _pickedImageFile;
 
   void _pickImage() async {
+    if (widget.onStart != null) widget.onStart!();
     final pickedImage = await ImagePicker().pickImage(
       source: ImageSource.gallery,
       imageQuality: 50,
@@ -32,13 +35,13 @@ class _CircularImagePickerState extends State<CircularImagePicker> {
     setState(() {
       _pickedImageFile = File(pickedImage.path);
     });
-    widget.onPickImage(_pickedImageFile!);
+    widget.onPickImage!(_pickedImageFile!);
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: _pickImage,
+      onTap: widget.onPickImage == null ? null : _pickImage,
       child: CircleAvatar(
         radius: widget.radius,
         backgroundColor: _pickedImageFile != null

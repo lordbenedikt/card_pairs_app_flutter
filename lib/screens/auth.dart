@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_svg/svg.dart';
+import 'package:memory/models/user.dart';
 import 'package:memory/widgets/user_image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -65,12 +66,12 @@ class _AuthScreenState extends State<AuthScreen> {
         FirebaseFirestore.instance
             .collection('users')
             .doc(userCredentials.user!.uid)
-            .set({
-          'uid': userCredentials.user!.uid,
-          'email': _enteredEmail,
-          'username': _enteredUsername,
-          'image_url': imageUrl,
-        });
+            .set(AppUser(
+              uid: userCredentials.user!.uid,
+              email: _enteredEmail,
+              username: _enteredUsername,
+              imageUrl: imageUrl,
+            ).toJson());
       } on FirebaseAuthException catch (error) {
         ScaffoldMessenger.of(context).clearSnackBars();
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -134,7 +135,8 @@ class _AuthScreenState extends State<AuthScreen> {
                               validator: (value) {
                                 if (value == null ||
                                     value.trim().isEmpty ||
-                                    !value.contains('@')) {
+                                    !value.contains('@') ||
+                                    !value.contains('.')) {
                                   return 'Please enter a valid email address.';
                                 }
                                 return null;
