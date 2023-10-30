@@ -56,7 +56,7 @@ class SetListScreen extends StatelessWidget {
                 final set = CardSet.fromJson(sets[index].data());
                 return GestureDetector(
                   onTap: () {
-                    SqfliteHelper.addCardSet(set);
+                    // SqfliteHelper.addCardSet(set);
 
                     Navigator.of(context).push(MaterialPageRoute(
                       builder: (context) {

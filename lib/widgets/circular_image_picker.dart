@@ -7,13 +7,15 @@ class CircularImagePicker extends StatefulWidget {
   const CircularImagePicker({
     super.key,
     required this.onPickImage,
+    this.isEnabled = true,
     this.onStart,
     this.label,
     this.radius = 60,
   });
 
-  final void Function(File pickedImage)? onPickImage;
+  final void Function(File pickedImage) onPickImage;
   final void Function()? onStart;
+  final bool isEnabled;
   final String? label;
   final double radius;
 
@@ -31,7 +33,9 @@ class _CircularImagePickerState extends State<CircularImagePicker> {
       imageQuality: 50,
       maxWidth: 800,
     );
-    if (pickedImage == null) return;
+    if (pickedImage == null) {
+      return;
+    }
     setState(() {
       _pickedImageFile = File(pickedImage.path);
     });

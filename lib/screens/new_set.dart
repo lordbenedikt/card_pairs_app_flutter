@@ -243,22 +243,22 @@ class _NewSetScreenState extends State<NewSetScreen> {
                 child: Row(
                   children: [
                     CircularImagePicker(
+                        isEnabled: !_isLoading,
                         onStart: () => setState(() {
                               _isLoading = true;
                             }),
-                        onPickImage: _isLoading
-                            ? null
-                            : (file) {
-                                _pickedCoverImage = file;
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                              },
+                        onPickImage: (file) {
+                          _pickedCoverImage = file;
+                          setState(() {
+                            _isLoading = false;
+                          });
+                        },
                         label: 'Add cover image'),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           ElevatedButton.icon(
                               onPressed: !_isLoading ? _pickImages : null,
