@@ -1,7 +1,10 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:image_picker/image_picker.dart';
 
 class GalleryGrid extends StatelessWidget {
   const GalleryGrid(
@@ -11,17 +14,19 @@ class GalleryGrid extends StatelessWidget {
       required this.onChangeSelection,
       this.zoom = 2});
 
-  final List<File> pickedImages;
+  final List<Uint8List> pickedImages;
   final List<int> selectedImages;
   final Function(int, bool) onChangeSelection;
   final int zoom;
 
   @override
   Widget build(BuildContext context) {
+    final contextWidth = MediaQuery.of(context).size.width;
     return GridView.builder(
       padding: const EdgeInsets.all(10),
-      gridDelegate:
-          SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 5 - zoom),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: max(1, ((contextWidth / 200) * (5 - zoom)).floor()),
+      ),
       itemCount: pickedImages.length,
       itemBuilder: (context, index) {
         return GestureDetector(
@@ -57,7 +62,7 @@ class GalleryGrid extends StatelessWidget {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: Image.file(
+                  child: Image.memory(
                     pickedImages[index],
                     fit: BoxFit.cover,
                     colorBlendMode: BlendMode.multiply,

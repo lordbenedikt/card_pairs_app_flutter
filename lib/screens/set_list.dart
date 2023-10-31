@@ -1,10 +1,15 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/models/group.dart';
+import 'package:memory/models/user.dart';
 import 'package:memory/providers/sqflite_helper.dart';
 import 'package:memory/screens/memory.dart';
 import 'package:memory/screens/new_set.dart';
+import 'package:memory/widgets/add_users.dart';
+import 'package:memory/widgets/search_users.dart';
 
 class SetListScreen extends StatelessWidget {
   const SetListScreen(this.group, {super.key});
@@ -18,6 +23,19 @@ class SetListScreen extends StatelessWidget {
         centerTitle: true,
         title: Text(group.title),
         actions: [
+          // IconButton(
+          //   onPressed: () {
+          //     showDialog(
+          //       context: context,
+          //       builder: (context) {
+          //         return AlertDialog(
+          //           content: Center(child: SizedBox(child: AddUsers())),
+          //         );
+          //       },
+          //     );
+          //   },
+          //   icon: const Icon(Icons.group_add_rounded),
+          // ),
           IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
@@ -47,9 +65,10 @@ class SetListScreen extends StatelessWidget {
             }
 
             final sets = snapshot.data!.docs;
+            final contextWidth = MediaQuery.of(context).size.width;
             return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: max(1, (contextWidth / 175).floor())),
               itemCount: sets.length,
               itemBuilder: (context, index) {
                 // print(sets[index].data());

@@ -4,12 +4,12 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/models/group.dart';
 import 'package:memory/widgets/circular_image_picker.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:memory/widgets/gallery_grid.dart';
 import 'package:uuid/v4.dart';
 
@@ -23,9 +23,9 @@ class NewSetScreen extends StatefulWidget {
 }
 
 class _NewSetScreenState extends State<NewSetScreen> {
-  final List<File> _pickedImages = [];
+  final List<Uint8List> _pickedImages = [];
   final List<int> _selectedImages = [];
-  File? _pickedCoverImage;
+  Uint8List? _pickedCoverImage;
   bool _isLoading = false;
   int _galleryZoom = 3;
   bool _scaling = false;
@@ -57,13 +57,13 @@ class _NewSetScreenState extends State<NewSetScreen> {
     for (final image in _pickedImages) {
       final storageRef =
           storageRefParent.child('${const UuidV4().generate()}.png');
-      await storageRef.putFile(image);
+      await storageRef.putData(image);
       imageUrls.add(await storageRef.getDownloadURL());
     }
 
     final storageRef =
         storageRefParent.child('${const UuidV4().generate()}.png');
-    await storageRef.putFile(_pickedCoverImage!);
+    await storageRef.putData(_pickedCoverImage!);
     final coverImageUrl = await storageRef.getDownloadURL();
 
     final uid = const UuidV4().generate();
@@ -101,16 +101,19 @@ class _NewSetScreenState extends State<NewSetScreen> {
       maxWidth: 800,
     );
 
-    setState(() {
-      try {
-        for (final imageXFile in pickedMultiImage) {
-          _pickedImages.add(File(imageXFile.path));
-        }
-      } catch (error) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Error: $error')));
+    List<Uint8List> images = [];
+    try {
+      for (final imageXFile in pickedMultiImage) {
+        images.add(await imageXFile.readAsBytes());
       }
+    } catch (error) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $error')));
+    }
+
+    setState(() {
+      _pickedImages.addAll(images);
       _isLoading = false;
     });
   }
@@ -138,10 +141,10 @@ class _NewSetScreenState extends State<NewSetScreen> {
               },
               onScaleUpdate: (details) => setState(() {
                 if (_scaling) {
-                  if (details.scale < 0.95) {
+                  if (details.scale < 1) {
                     _galleryZoom = max(0, _galleryZoom - 1);
                     _scaling = false;
-                  } else if (details.scale > 1.05) {
+                  } else if (details.scale > 1) {
                     _galleryZoom = min(3, _galleryZoom + 1);
                     _scaling = false;
                   }
@@ -247,8 +250,8 @@ class _NewSetScreenState extends State<NewSetScreen> {
                         onStart: () => setState(() {
                               _isLoading = true;
                             }),
-                        onPickImage: (file) {
-                          _pickedCoverImage = file;
+                        onPickImage: (image) {
+                          _pickedCoverImage = image;
                           setState(() {
                             _isLoading = false;
                           });
@@ -264,6 +267,7 @@ class _NewSetScreenState extends State<NewSetScreen> {
                               onPressed: !_isLoading ? _pickImages : null,
                               icon: const Icon(Icons.add),
                               label: const Text("Add images")),
+                          const SizedBox(height: 20),
                           ElevatedButton(
                               onPressed: !_isLoading ? _submit : null,
                               child: const Text("Submit")),

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -13,7 +14,7 @@ class CircularImagePicker extends StatefulWidget {
     this.radius = 60,
   });
 
-  final void Function(File pickedImage) onPickImage;
+  final void Function(Uint8List pickedImage) onPickImage;
   final void Function()? onStart;
   final bool isEnabled;
   final String? label;
@@ -24,7 +25,7 @@ class CircularImagePicker extends StatefulWidget {
 }
 
 class _CircularImagePickerState extends State<CircularImagePicker> {
-  File? _pickedImageFile;
+  Uint8List? _pickedImage;
 
   void _pickImage() async {
     if (widget.onStart != null) widget.onStart!();
@@ -36,23 +37,24 @@ class _CircularImagePickerState extends State<CircularImagePicker> {
     if (pickedImage == null) {
       return;
     }
+    final imageData = await pickedImage.readAsBytes();
     setState(() {
-      _pickedImageFile = File(pickedImage.path);
+      _pickedImage = imageData;
     });
-    widget.onPickImage!(_pickedImageFile!);
+    widget.onPickImage(_pickedImage!);
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onPickImage == null ? null : _pickImage,
+      onTap: _pickImage,
       child: CircleAvatar(
         radius: widget.radius,
-        backgroundColor: _pickedImageFile != null
+        backgroundColor: _pickedImage != null
             ? Colors.transparent
             : Theme.of(context).colorScheme.inverseSurface,
         foregroundImage:
-            _pickedImageFile != null ? FileImage(_pickedImageFile!) : null,
+            _pickedImage != null ? MemoryImage(_pickedImage!) : null,
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Icon(Icons.add, color: Theme.of(context).colorScheme.surface),
           if (widget.label != null)

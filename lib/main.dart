@@ -33,6 +33,7 @@ void main() async {
       theme: ThemeData().copyWith(
         colorScheme: kColorScheme,
       ),
+      debugShowCheckedModeBanner: false,
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (ctx, snapshot) {

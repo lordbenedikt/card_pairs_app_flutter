@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:memory/models/group.dart';
 import 'package:memory/models/user.dart';
 import 'package:memory/widgets/circular_image_picker.dart';
+import 'package:memory/widgets/search_users.dart';
 import 'package:uuid/v4.dart';
 
 class NewGroupScreen extends StatefulWidget {
@@ -17,40 +19,10 @@ class NewGroupScreen extends StatefulWidget {
 }
 
 class _NewGroupScreenState extends State<NewGroupScreen> {
-  late final Future<List<AppUser>> users;
-  final List<AppUser> selectedUsers = [];
+  final List<AppUser> _selectedUsers = [];
   String _pickedTitle = '';
-  File? _pickedImage;
-  String _searchString = '';
+  Uint8List? _pickedImage;
   final _form = GlobalKey<FormState>();
-
-  @override
-  void initState() {
-    users = getUsers();
-    super.initState();
-  }
-
-  List<AppUser> getFilteredUsers(List<AppUser> users, String searchString) {
-    final res = users
-        .where((user) => !selectedUsers.contains(user))
-        .where((user) => user.uid != FirebaseAuth.instance.currentUser!.uid)
-        .toList();
-    if (searchString.trim().isEmpty) return res;
-    return res
-        .where((user) =>
-            user.username.contains(searchString) ||
-            user.email.contains(searchString))
-        .toList();
-  }
-
-  Future<List<AppUser>> getUsers() async {
-    final List<AppUser> res = [];
-    final allUsers = await FirebaseFirestore.instance.collection('users').get();
-    for (final user in allUsers.docs) {
-      res.add(AppUser.fromJson(user.data()));
-    }
-    return res;
-  }
 
   void _submit() async {
     bool imageIsValid = true;
@@ -69,7 +41,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
     _form.currentState!.save();
 
     final admin = FirebaseAuth.instance.currentUser!.uid;
-    final members = selectedUsers.map((user) => user.uid).toList();
+    final members = _selectedUsers.map((user) => user.uid).toList();
     members.add(admin);
 
     final groupUid = const UuidV4().generate();
@@ -79,7 +51,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
         .child('group_images')
         .child("$groupUid.jpg");
 
-    await storageRef.putFile(_pickedImage!);
+    await storageRef.putData(_pickedImage!);
     final imageUrl = await storageRef.getDownloadURL();
 
     FirebaseFirestore.instance.collection('groups').doc(groupUid).set(Group(
@@ -123,8 +95,8 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
               child: Row(
                 children: [
                   CircularImagePicker(
-                    onPickImage: (file) {
-                      _pickedImage = file;
+                    onPickImage: (image) {
+                      _pickedImage = image;
                     },
                     label: 'Add image',
                     radius: 45,
@@ -158,7 +130,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
                         ),
                         const SizedBox(height: 16),
                         Wrap(spacing: 4, runSpacing: 4, children: [
-                          for (final user in selectedUsers)
+                          for (final user in _selectedUsers)
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
@@ -183,7 +155,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
                                   GestureDetector(
                                     onTap: () {
                                       setState(() {
-                                        selectedUsers.remove(user);
+                                        _selectedUsers.remove(user);
                                       });
                                     },
                                     child: const Icon(Icons.close),
@@ -199,103 +171,11 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
               ),
             ),
             const Divider(),
-            Container(
-              padding:
-                  const EdgeInsets.only(top: 0, bottom: 0, left: 20, right: 30),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: Theme.of(context).colorScheme.secondaryContainer),
-              child: TextFormField(
-                onChanged: (value) {
-                  setState(() {
-                    _searchString = value;
-                  });
-                },
-                decoration: const InputDecoration(
-                  icon: Icon(Icons.search),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 4,
-                    vertical: 0,
-                  ),
-                  border: InputBorder.none,
-                ),
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      color: Theme.of(context).colorScheme.onSecondaryContainer,
-                    ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Expanded(
-              child: FutureBuilder(
-                  future: users,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: CircularProgressIndicator(),
-                        ),
-                      );
-                    }
-
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Text(
-                            'Error: ${snapshot.error.toString()}',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.titleMedium,
-                            softWrap: true,
-                          ),
-                        ),
-                      );
-                    }
-
-                    final filteredUsers =
-                        getFilteredUsers(snapshot.data!, _searchString);
-                    if (snapshot.hasData && filteredUsers.isNotEmpty) {
-                      return ListView.builder(
-                        itemCount: filteredUsers.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            onTap: () {
-                              final user = filteredUsers[index];
-                              if (!selectedUsers.contains(user)) {
-                                setState(() {
-                                  selectedUsers.add(user);
-                                });
-                              }
-                            },
-                            contentPadding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 10,
-                            ),
-                            leading: CircleAvatar(
-                              radius: 30,
-                              backgroundImage:
-                                  NetworkImage(filteredUsers[index].imageUrl),
-                            ),
-                            title: Column(children: [
-                              Text(
-                                filteredUsers[index].username,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium!
-                                    .copyWith(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              Text(filteredUsers[index].email),
-                            ]),
-                          );
-                        },
-                      );
-                    }
-
-                    return const Center(child: Text('No users found'));
-                  }),
+            SearchUsers(
+              selectedUsers: _selectedUsers,
+              onChanged: () {
+                setState(() {});
+              },
             ),
           ],
         ),

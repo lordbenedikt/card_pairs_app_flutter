@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/screens/new_set.dart';
@@ -160,7 +162,10 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
     const minHeight = 150;
     cols = (constraints.maxWidth / minWidth).floor();
     rows = (constraints.maxHeight / minHeight).floor();
-    final numOfPairs = (cols * rows / 2).floor();
+    final int numOfPairs = min(
+      widget.cardSet.imageUrls.length,
+      cols * rows / 2,
+    ).floor();
     imageUrls = widget.cardSet.imageUrls;
     imageUrls.shuffle();
     imageUrls = [
