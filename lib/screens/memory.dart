@@ -41,23 +41,17 @@ class _MemoryScreenState extends State<MemoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor:
-      //       gameOver ? Colors.green : Theme.of(context).colorScheme.primary,
-      //   centerTitle: true,
-      //   title: Text(
-      //     gameOver ? 'Congratulations!' : 'Can you find all pairs?',
-      //     textAlign: TextAlign.center,
-      //   ),
-      //   actions: [
-      //     IconButton(
-      //       onPressed: restart,
-      //       icon: const Icon(Icons.replay),
-      //     ),
-      //   ],
-      // ),
-      // backgroundColor: Colors.brown[200],
+    return
+        // Theme(
+        //   data: Theme.of(context).copyWith(
+        //     colorScheme: ColorScheme.fromSeed(
+        //       brightness: Brightness.dark,
+        //       seedColor: Theme.of(context).colorScheme.primaryContainer,
+        //     ),
+        //   ),
+        //   child:
+        Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: Stack(
         children: [
           MemoryScreenBody(
@@ -100,6 +94,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
           ),
         ],
       ),
+      // ),
     );
   }
 }

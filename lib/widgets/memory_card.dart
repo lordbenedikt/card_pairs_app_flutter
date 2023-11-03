@@ -23,16 +23,15 @@ class MemoryCard extends StatelessWidget {
     Color backColor = Theme.of(context).colorScheme.secondaryContainer;
     Color backColorDarker = Color.fromARGB(
       255,
-      (backColor.red * 0.9).round(),
-      (backColor.green * 0.9).round(),
-      (backColor.blue * 0.9).round(),
+      (backColor.red * 0.8).round(),
+      (backColor.green * 0.8).round(),
+      (backColor.blue * 0.8).round(),
     );
 
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(
           onTap: () {
-            print(imageProvider);
             onTap(cardIndex);
           },
           child: Flipper(
