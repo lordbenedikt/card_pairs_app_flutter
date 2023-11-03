@@ -172,6 +172,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
             ),
             const Divider(),
             SearchUsers(
+              hideUsers: [FirebaseAuth.instance.currentUser!.uid],
               selectedUsers: _selectedUsers,
               onChanged: () {
                 setState(() {});

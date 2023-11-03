@@ -32,6 +32,7 @@ class MemoryCard extends StatelessWidget {
       builder: (context, constraints) {
         return GestureDetector(
           onTap: () {
+            print(imageProvider);
             onTap(cardIndex);
           },
           child: Flipper(

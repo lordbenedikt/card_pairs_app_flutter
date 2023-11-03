@@ -16,7 +16,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_image_compress: ^2.0.4
-  flutter_riverpod: ^2.4.3
+  flutter_riverpod: ^2.4.5
   flutter_svg: ^2.0.8
   font_awesome_flutter: ^10.6.0
   image_picker: ^1.0.4

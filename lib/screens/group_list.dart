@@ -1,23 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:memory/models/group.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memory/providers/group_provider.dart';
 import 'package:memory/screens/set_list.dart';
-import 'package:memory/screens/memory.dart';
 import 'package:memory/screens/new_group.dart';
-import 'package:memory/screens/new_set.dart';
-import 'package:memory/screens/set_list.dart';
 
-class GroupListScreen extends StatefulWidget {
+class GroupListScreen extends ConsumerStatefulWidget {
   const GroupListScreen({super.key});
 
   @override
-  State<GroupListScreen> createState() => _GroupListScreenState();
+  ConsumerState<GroupListScreen> createState() => _GroupListScreenState();
 }
 
-class _GroupListScreenState extends State<GroupListScreen> {
+class _GroupListScreenState extends ConsumerState<GroupListScreen> {
   @override
   Widget build(BuildContext context) {
+    final groups = ref.watch(groupsProvider);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -68,48 +68,46 @@ class _GroupListScreenState extends State<GroupListScreen> {
               );
             }
 
-            if (snapshot.hasData && snapshot.data!.docs.isNotEmpty) {
-              final groups = snapshot.data!.docs
+            if (groups.isNotEmpty) {
+              final myGroups = groups
                   .where(
-                    (element) =>
-                        element['members']
+                    (group) =>
+                        group.members
                             .contains(FirebaseAuth.instance.currentUser!.uid) ||
-                        element['uid'] ==
-                            '26f220a9-5ebe-467b-836e-37d389045c3f',
+                        group.uid == '26f220a9-5ebe-467b-836e-37d389045c3f',
                   )
                   .toList();
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 child: ListView.builder(
-                    itemCount: groups.length,
-                    itemBuilder: (context, index) {
-                      final group = Group.fromJson(groups[index].data());
-                      return ListTile(
-                        onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => SetListScreen(group)));
-                        },
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 10,
+                  itemCount: myGroups.length,
+                  itemBuilder: (context, index) {
+                    final group = myGroups[index];
+                    return ListTile(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SetListScreen(group.uid)));
+                      },
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 10,
+                      ),
+                      leading: CircleAvatar(
+                        radius: 30,
+                        backgroundImage: NetworkImage(group.imageUrl),
+                      ),
+                      title: Column(children: [
+                        Text(
+                          group.title,
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
-                        leading: CircleAvatar(
-                          radius: 30,
-                          backgroundImage: NetworkImage(group.imageUrl),
-                        ),
-                        title: Column(children: [
-                          Text(
-                            group.title,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                        ]),
-                      );
-                    }),
+                      ]),
+                    );
+                  },
+                ),
               );
             } else {
               return const Center(child: Text("You're not in any group."));

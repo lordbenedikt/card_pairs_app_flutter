@@ -86,7 +86,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -104,7 +104,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   width: 200,
                   fit: BoxFit.cover,
                   colorFilter:
-                      const ColorFilter.mode(Colors.white, BlendMode.srcIn),
+                      const ColorFilter.mode(Colors.white70, BlendMode.srcIn),
                 ),
               ),
               const SizedBox(height: 30),
@@ -129,7 +129,7 @@ class _AuthScreenState extends State<AuthScreen> {
                           TextFormField(
                               key: const ValueKey('email'),
                               decoration: const InputDecoration(
-                                  labelText: 'Email Adress'),
+                                  labelText: 'Email Address'),
                               keyboardType: TextInputType.emailAddress,
                               textCapitalization: TextCapitalization.none,
                               validator: (value) {
@@ -140,6 +140,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                   return 'Please enter a valid email address.';
                                 }
                                 return null;
+                              },
+                              onFieldSubmitted: (value) {
+                                _submit();
                               },
                               onSaved: (value) {
                                 _enteredEmail = value!;
@@ -171,6 +174,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                 }
                                 return null;
                               },
+                              onFieldSubmitted: (value) {
+                                _submit();
+                              },
                               onSaved: (value) {
                                 _enteredPassword = value!;
                               }),
@@ -185,7 +191,16 @@ class _AuthScreenState extends State<AuthScreen> {
                                     .colorScheme
                                     .primaryContainer,
                               ),
-                              child: Text(_isLogin ? 'Login' : 'Signup'),
+                              child: Text(_isLogin ? 'Login' : 'Signup',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium!
+                                      .copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryContainer,
+                                      )),
                             ),
                           if (!_isAuthenticating)
                             TextButton(

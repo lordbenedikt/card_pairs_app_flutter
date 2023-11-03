@@ -42,29 +42,63 @@ class _MemoryScreenState extends State<MemoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor:
-            gameOver ? Colors.green : Theme.of(context).colorScheme.primary,
-        centerTitle: true,
-        title: Text(
-          gameOver ? 'Congratulations!' : 'Can you find all pairs?',
-          textAlign: TextAlign.center,
-        ),
-        actions: [
-          IconButton(
-            onPressed: restart,
-            icon: const Icon(Icons.replay),
+      // appBar: AppBar(
+      //   backgroundColor:
+      //       gameOver ? Colors.green : Theme.of(context).colorScheme.primary,
+      //   centerTitle: true,
+      //   title: Text(
+      //     gameOver ? 'Congratulations!' : 'Can you find all pairs?',
+      //     textAlign: TextAlign.center,
+      //   ),
+      //   actions: [
+      //     IconButton(
+      //       onPressed: restart,
+      //       icon: const Icon(Icons.replay),
+      //     ),
+      //   ],
+      // ),
+      // backgroundColor: Colors.brown[200],
+      body: Stack(
+        children: [
+          MemoryScreenBody(
+            key: _key,
+            cardSet: widget.cardSet,
+            onRestart: restart,
+            onGameOver: () {
+              setState(() => gameOver = true);
+            },
+          ),
+          Positioned(
+            bottom: 10,
+            left: 10,
+            child: Container(
+              decoration: ShapeDecoration(
+                shape: const CircleBorder(),
+                color: Colors.black.withOpacity(0.6),
+              ),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                icon: const Icon(Icons.arrow_back, color: Colors.white70),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: Container(
+              decoration: ShapeDecoration(
+                shape: const CircleBorder(),
+                color: Colors.black.withOpacity(0.6),
+              ),
+              child: IconButton(
+                onPressed: restart,
+                icon: const Icon(Icons.replay, color: Colors.white70),
+              ),
+            ),
           ),
         ],
-      ),
-      // backgroundColor: Colors.brown[200],
-      body: MemoryScreenBody(
-        key: _key,
-        cardSet: widget.cardSet,
-        onRestart: restart,
-        onGameOver: () {
-          setState(() => gameOver = true);
-        },
       ),
     );
   }
@@ -147,12 +181,13 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
           activeCardIndices.clear();
           doingPairCheck = false;
         });
-        Future.delayed(const Duration(milliseconds: 700), () {
+        Future.delayed(const Duration(milliseconds: 900), () {
           mustFlipDown[0].flipperController.flipDown();
+
           Future.delayed(const Duration(milliseconds: 100), () {
             mustFlipDown[1].flipperController.flipDown();
-          });
-        });
+          }).ignore();
+        }).ignore();
       }
     }
   }

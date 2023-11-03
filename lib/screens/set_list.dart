@@ -2,40 +2,47 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/models/card_set.dart';
-import 'package:memory/models/group.dart';
-import 'package:memory/models/user.dart';
-import 'package:memory/providers/sqflite_helper.dart';
+import 'package:memory/providers/group_provider.dart';
 import 'package:memory/screens/memory.dart';
 import 'package:memory/screens/new_set.dart';
 import 'package:memory/widgets/add_users.dart';
-import 'package:memory/widgets/search_users.dart';
 
-class SetListScreen extends StatelessWidget {
-  const SetListScreen(this.group, {super.key});
+class SetListScreen extends ConsumerWidget {
+  const SetListScreen(this.groupUid, {super.key});
 
-  final Group group;
+  final String groupUid;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final group =
+        ref.watch(groupsProvider).firstWhere((group) => group.uid == groupUid);
+
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text(group.title),
         actions: [
-          // IconButton(
-          //   onPressed: () {
-          //     showDialog(
-          //       context: context,
-          //       builder: (context) {
-          //         return AlertDialog(
-          //           content: Center(child: SizedBox(child: AddUsers())),
-          //         );
-          //       },
-          //     );
-          //   },
-          //   icon: const Icon(Icons.group_add_rounded),
-          // ),
+          IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: SizedBox(
+                        height: 400,
+                        child: AddUsers(group),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+            icon: const Icon(Icons.group_add_rounded),
+          ),
           IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
