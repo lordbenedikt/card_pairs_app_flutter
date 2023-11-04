@@ -6,10 +6,10 @@ class CardSetsNotifier extends StateNotifier<List<CardSet>> {
   CardSetsNotifier() : super([]) {
     final firestore = FirebaseFirestore.instance;
 
-    firestore.collection('card_set').snapshots().listen((querySnapshot) {
+    firestore.collection('card_sets').snapshots().listen((querySnapshot) {
       final List<CardSet> res = [];
-      for (var group in querySnapshot.docs) {
-        res.add(CardSet.fromJson(group.data()));
+      for (var cardSet in querySnapshot.docs) {
+        res.add(CardSet.fromJson(cardSet.data()));
       }
       state = res;
     });

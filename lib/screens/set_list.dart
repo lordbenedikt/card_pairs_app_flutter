@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/models/card_set.dart';
-import 'package:memory/models/group.dart';
+import 'package:memory/providers/card_set_provider.dart';
 import 'package:memory/providers/group_provider.dart';
 import 'package:memory/providers/user_provider.dart';
 import 'package:memory/screens/memory.dart';
@@ -18,21 +18,10 @@ class SetListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final Group group;
-    if (ref.watch(groupsProvider).isEmpty) {
-      return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    } else {
-      group = ref.watch(groupsProvider).firstWhere(
-            (group) => group.uid == groupUid,
-          );
-    }
+    final group =
+        ref.watch(groupsProvider).firstWhere((group) => group.uid == groupUid);
+    final sets = ref.watch(cardSetsProvider);
+    print('sets: $sets');
 
     return Scaffold(
       appBar: AppBar(
@@ -68,32 +57,16 @@ class SetListScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('card_sets')
-              // .where('groups_that_can_view', arrayContains: group.uid)
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-
-            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(child: Text('No sets in this group'));
-            }
-
-            final sets = snapshot.data!.docs;
-            final contextWidth = MediaQuery.of(context).size.width;
-            return GridView.builder(
+      body: sets.isEmpty
+          ? const Center(child: Text('No sets in this group'))
+          : GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: max(1, (contextWidth / 175).floor())),
+                crossAxisCount:
+                    max(1, (MediaQuery.of(context).size.width / 175).floor()),
+              ),
               itemCount: sets.length,
               itemBuilder: (context, index) {
-                final set = CardSet.fromJson(sets[index].data());
+                final set = sets[index];
                 return GestureDetector(
                   onTap: () {
                     // SqfliteHelper.addCardSet(set);
@@ -154,7 +127,7 @@ class SetListScreen extends ConsumerWidget {
                                       ),
                                 ),
                                 Text(
-                                  'by ${ref.read(usersProvider).firstWhere((user) => user.uid == set.owner).username}',
+                                  'by ${ref.watch(usersProvider).isEmpty ? '' : ref.watch(usersProvider).firstWhere((user) => user.uid == set.owner).username}',
                                   textAlign: TextAlign.center,
                                   style: Theme.of(context)
                                       .textTheme
@@ -172,8 +145,7 @@ class SetListScreen extends ConsumerWidget {
                   ),
                 );
               },
-            );
-          }),
+            ),
     );
   }
 }

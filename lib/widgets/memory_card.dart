@@ -49,7 +49,6 @@ class MemoryCard extends StatelessWidget {
                   borderRadius:
                       BorderRadius.circular(constraints.maxWidth / 15)),
               child: Image(
-                // alignment: Alignment.topCenter,
                 image: imageProvider,
                 fit: BoxFit.cover,
               ),
