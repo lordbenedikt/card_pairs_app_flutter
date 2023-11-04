@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/models/card_set.dart';
+import 'package:memory/models/group.dart';
 import 'package:memory/providers/group_provider.dart';
 import 'package:memory/providers/user_provider.dart';
 import 'package:memory/screens/memory.dart';
@@ -17,8 +18,21 @@ class SetListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final group =
-        ref.watch(groupsProvider).firstWhere((group) => group.uid == groupUid);
+    final Group group;
+    if (ref.watch(groupsProvider).isEmpty) {
+      return Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    } else {
+      group = ref.watch(groupsProvider).firstWhere(
+            (group) => group.uid == groupUid,
+          );
+    }
 
     return Scaffold(
       appBar: AppBar(
