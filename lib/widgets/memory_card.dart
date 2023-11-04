@@ -61,9 +61,9 @@ class MemoryCard extends StatelessWidget {
                       BorderRadius.circular(constraints.maxWidth / 15)),
               child: Container(
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+                  gradient: RadialGradient(
+                    center: const Alignment(0.5, 0.5),
+                    radius: 3,
                     colors: [
                       backColor,
                       backColorDarker,
