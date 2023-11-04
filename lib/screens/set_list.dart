@@ -1,9 +1,7 @@
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memory/models/card_set.dart';
 import 'package:memory/providers/card_set_provider.dart';
 import 'package:memory/providers/group_provider.dart';
 import 'package:memory/providers/user_provider.dart';
@@ -21,7 +19,6 @@ class SetListScreen extends ConsumerWidget {
     final group =
         ref.watch(groupsProvider).firstWhere((group) => group.uid == groupUid);
     final sets = ref.watch(cardSetsProvider);
-    print('sets: $sets');
 
     return Scaffold(
       appBar: AppBar(
