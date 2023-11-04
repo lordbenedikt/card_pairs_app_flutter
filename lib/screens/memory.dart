@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:memory/models/card_set.dart';
+import 'package:memory/providers/sqflite_helper.dart';
 import 'package:memory/screens/new_set.dart';
 import 'package:memory/widgets/custom_grid.dart';
 import 'package:memory/flipper_customized/flippy.dart';
@@ -126,7 +127,7 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   late final int cols;
   late final int rows;
 
-  void precacheImages(BuildContext context, List<String> urls) {
+  void precacheImages(BuildContext context, List<String> urls) async {
     for (var url in urls) {
       precacheImage(NetworkImage(url), context);
     }
@@ -209,14 +210,12 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
           key: ValueKey('memory_card_$i'),
           onTap: onTapCard,
           cardIndex: i,
-          imageProvider: NetworkImage(imageUrls[i]),
+          imageUrl: imageUrls[i],
           flipperController: FlipperController(dragAxis: DragAxis.vertical),
         ),
     ];
 
-    Future.delayed(Duration.zero, () {
-      precacheImages(context, imageUrls);
-    });
+    precacheImages(context, widget.cardSet.imageUrls);
   }
 
   @override

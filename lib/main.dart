@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/firebase_options.dart';
 import 'package:memory/providers/image_provider.dart';
+import 'package:memory/providers/sqflite_helper.dart';
 import 'package:memory/screens/auth.dart';
 import 'package:memory/screens/group_list.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,6 +26,8 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // await SqfliteHelper.init();
 
   runApp(
     ProviderScope(
