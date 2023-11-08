@@ -1,31 +1,40 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UserImagePicker extends StatefulWidget {
-  const UserImagePicker({super.key, required this.onPickImage});
+  const UserImagePicker(
+      {super.key, required this.onPickImage, this.initialImage});
 
-  final void Function(File pickedImage) onPickImage;
+  final void Function(Uint8List pickedImage) onPickImage;
+  final Uint8List? initialImage;
 
   @override
   State<UserImagePicker> createState() => _UserImagePickerState();
 }
 
 class _UserImagePickerState extends State<UserImagePicker> {
-  File? _pickedImageFile;
+  Uint8List? _pickedImage;
 
-  void _pickImage() async {
-    final pickedImage = await ImagePicker().pickImage(
-      source: ImageSource.camera,
+  @override
+  void initState() {
+    _pickedImage = widget.initialImage;
+    super.initState();
+  }
+
+  void _pickImage(ImageSource source) async {
+    final pickedImageXFile = await ImagePicker().pickImage(
+      source: source,
       imageQuality: 50,
       maxWidth: 800,
     );
-    if (pickedImage == null) return;
+    if (pickedImageXFile == null) return;
+    final pickedImage = await pickedImageXFile.readAsBytes();
     setState(() {
-      _pickedImageFile = File(pickedImage.path);
+      _pickedImage = pickedImage;
     });
-    widget.onPickImage(_pickedImageFile!);
+    widget.onPickImage(_pickedImage!);
   }
 
   @override
@@ -33,16 +42,34 @@ class _UserImagePickerState extends State<UserImagePicker> {
     return Column(
       children: [
         CircleAvatar(
-            radius: 40,
+            radius: 50,
             backgroundColor: Colors.grey,
             foregroundImage:
-                _pickedImageFile != null ? FileImage(_pickedImageFile!) : null),
-        TextButton.icon(
-          onPressed: _pickImage,
-          icon: const Icon(Icons.image),
-          label: Text('Add image',
-              style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-        ),
+                _pickedImage != null ? MemoryImage(_pickedImage!) : null),
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          IconButton(
+            onPressed: () {
+              _pickImage(ImageSource.camera);
+            },
+            icon: Icon(
+              Icons.camera,
+              size: 30,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            tooltip: 'Take photo',
+          ),
+          IconButton(
+            onPressed: () {
+              _pickImage(ImageSource.gallery);
+            },
+            icon: Icon(
+              Icons.image,
+              size: 30,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            tooltip: 'Choose from gallery',
+          ),
+        ]),
       ],
     );
   }

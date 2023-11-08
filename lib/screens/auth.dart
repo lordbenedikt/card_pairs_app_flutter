@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter_svg/svg.dart';
 import 'package:memory/models/user.dart';
@@ -23,10 +24,12 @@ class _AuthScreenState extends State<AuthScreen> {
   var _enteredEmail = '';
   var _enteredUsername = '';
   var _enteredPassword = '';
-  File? _selectedImage;
+  Uint8List? _selectedImage;
   var _isAuthenticating = false;
+  var _validationDone = false;
 
   void _submit() async {
+    _validationDone = true;
     final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
@@ -60,7 +63,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .child('user_images')
             .child('${userCredentials.user!.uid}.jpg');
 
-        await storageRef.putFile(_selectedImage!);
+        await storageRef.putData(_selectedImage!);
         final imageUrl = await storageRef.getDownloadURL();
 
         FirebaseFirestore.instance
@@ -92,21 +95,22 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                margin: const EdgeInsets.only(
-                  top: 30,
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
+              if (_isLogin)
+                Container(
+                  margin: const EdgeInsets.only(
+                    top: 30,
+                    bottom: 20,
+                    left: 20,
+                    right: 20,
+                  ),
+                  child: SvgPicture.asset(
+                    'assets/images/cards_icon.svg',
+                    width: 200,
+                    fit: BoxFit.cover,
+                    colorFilter:
+                        const ColorFilter.mode(Colors.white70, BlendMode.srcIn),
+                  ),
                 ),
-                child: SvgPicture.asset(
-                  'assets/images/cards_icon.svg',
-                  width: 200,
-                  fit: BoxFit.cover,
-                  colorFilter:
-                      const ColorFilter.mode(Colors.white70, BlendMode.srcIn),
-                ),
-              ),
               const SizedBox(height: 30),
               Card(
                 margin: const EdgeInsets.all(20),
@@ -125,7 +129,19 @@ class _AuthScreenState extends State<AuthScreen> {
                                   _selectedImage = pickedImage;
                                 });
                               },
+                              initialImage: _selectedImage,
                             ),
+                          if (!_isLogin &&
+                              _selectedImage == null &&
+                              _validationDone)
+                            Text('Must choose a profile picture',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodySmall!
+                                    .copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .error)),
                           TextFormField(
                               key: const ValueKey('email'),
                               decoration: const InputDecoration(
