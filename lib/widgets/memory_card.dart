@@ -55,6 +55,12 @@ class MemoryCard extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        final boxShadow = [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              blurRadius: 3,
+              offset: const Offset(2, 2)),
+        ];
         return GestureDetector(
           onTap: () {
             onTap(cardIndex);
@@ -75,10 +81,14 @@ class MemoryCard extends StatelessWidget {
             side: CardSide.BACK,
             controller: flipperController,
             front: Container(
+              margin: EdgeInsets.all(constraints.maxWidth / 50),
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
-                  borderRadius:
-                      BorderRadius.circular(constraints.maxWidth / 15)),
+                borderRadius: BorderRadius.circular(constraints.maxWidth / 15),
+                boxShadow: boxShadow,
+              ),
               child: FadeInImage(
                 placeholder: MemoryImage(kTransparentImage),
                 image: NetworkImage(imageUrl),
@@ -86,6 +96,9 @@ class MemoryCard extends StatelessWidget {
               ),
             ),
             back: Container(
+              margin: EdgeInsets.all(constraints.maxWidth / 50),
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
               clipBehavior: Clip.hardEdge,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(constraints.maxWidth / 15),
@@ -97,6 +110,7 @@ class MemoryCard extends StatelessWidget {
                     backColorDarker,
                   ],
                 ),
+                boxShadow: boxShadow,
               ),
             ),
           ),
