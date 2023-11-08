@@ -153,6 +153,7 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   List<int> discoveredCards = [];
   bool doingPairCheck = false;
   bool setupDone = false;
+  // bool showFlipAnimation = false;
   bool showFlipAnimation = !(kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS));

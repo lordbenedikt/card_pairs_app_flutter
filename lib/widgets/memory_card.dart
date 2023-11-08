@@ -53,58 +53,67 @@ class MemoryCard extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
+        final inkWellWidget = Material(
+          color: Colors.transparent,
+          child: Theme(
+            data: ThemeData(
+                splashColor: Theme.of(context).colorScheme.primaryContainer),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(constraints.maxWidth / 15),
+              onTap: () {
+                onTap(cardIndex);
+              },
+              onLongPress: () {
+                if (isFrontVisible()) {
+                  viewImage(context);
+                }
+              },
+            ),
+          ),
+        );
         final boxShadow = [
           BoxShadow(
               color: Colors.black.withOpacity(0.2),
               blurRadius: 3,
               offset: const Offset(1, 1)),
         ];
-        return GestureDetector(
-          onTap: () {
-            onTap(cardIndex);
-          },
-          onLongPress: () {
-            if (isFrontVisible()) {
-              viewImage(context);
-            }
-          },
-          child: FlipCard(
-            flipOnTouch: false,
-            side: CardSide.BACK,
-            controller: flipperController,
-            front: Container(
-              margin: EdgeInsets.all(constraints.maxWidth / 50),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(constraints.maxWidth / 15),
-                boxShadow: boxShadow,
-              ),
-              child: FadeInImage(
-                placeholder: MemoryImage(kTransparentImage),
-                image: NetworkImage(imageUrl),
-                fit: BoxFit.cover,
-              ),
+        return FlipCard(
+          flipOnTouch: false,
+          side: CardSide.BACK,
+          controller: flipperController,
+          front: Container(
+            margin: EdgeInsets.all(constraints.maxWidth / 50),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(constraints.maxWidth / 15),
+              boxShadow: boxShadow,
             ),
-            back: Container(
-              margin: EdgeInsets.all(constraints.maxWidth / 50),
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              clipBehavior: Clip.hardEdge,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(constraints.maxWidth / 15),
-                gradient: RadialGradient(
-                  center: const Alignment(0.5, 0.5),
-                  radius: 3,
-                  colors: [
-                    backColor,
-                    backColorDarker,
-                  ],
-                ),
-                boxShadow: boxShadow,
-              ),
+            child: FadeInImage(
+              placeholder: MemoryImage(kTransparentImage),
+              image: NetworkImage(imageUrl),
+              fit: BoxFit.cover,
             ),
+          ),
+          back: Container(
+            margin: EdgeInsets.all(constraints.maxWidth / 50),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(constraints.maxWidth / 15),
+              gradient: RadialGradient(
+                center: const Alignment(0.5, 0.5),
+                radius: 3,
+                colors: [
+                  backColor,
+                  backColorDarker,
+                ],
+              ),
+              boxShadow: boxShadow,
+            ),
+            child: inkWellWidget,
           ),
         );
       },
