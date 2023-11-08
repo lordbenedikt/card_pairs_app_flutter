@@ -219,8 +219,10 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   void setup(BoxConstraints constraints) {
     const minWidth = 150;
     const minHeight = 150;
-    cols = (constraints.maxWidth / minWidth).floor();
-    rows = (constraints.maxHeight / minHeight).floor();
+    cols = 1;
+    (constraints.maxWidth / minWidth).floor();
+    rows = 2;
+    (constraints.maxHeight / minHeight).floor();
     final int numOfPairs = min(
       widget.cardSet.imageUrls.length,
       cols * rows / 2,
