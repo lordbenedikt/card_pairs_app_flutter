@@ -3,13 +3,16 @@ import 'dart:io';
 
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/models/card_set.dart';
+import 'package:memory/providers/app_settings_provider.dart';
 import 'package:memory/widgets/custom_grid.dart';
 import 'package:flutter/material.dart';
 
 import 'package:memory/widgets/memory_card.dart';
+import 'package:memory/widgets/set_size_dialog.dart';
 
-class MemoryScreen extends StatefulWidget {
+class MemoryScreen extends ConsumerStatefulWidget {
   const MemoryScreen({
     super.key,
     required this.cardSet,
@@ -18,10 +21,10 @@ class MemoryScreen extends StatefulWidget {
   final CardSet cardSet;
 
   @override
-  State<MemoryScreen> createState() => _MemoryScreenState();
+  ConsumerState<MemoryScreen> createState() => _MemoryScreenState();
 }
 
-class _MemoryScreenState extends State<MemoryScreen> {
+class _MemoryScreenState extends ConsumerState<MemoryScreen> {
   bool gameOver = false;
   Key _key = UniqueKey();
 
@@ -87,7 +90,14 @@ class _MemoryScreenState extends State<MemoryScreen> {
               ),
               child: IconButton(
                 onPressed: () {
-                  Navigator.of(context).pop();
+                  showDialog(
+                      builder: (context) => SetSizeDialog(
+                            onRestart: restart,
+                            autoSize: ref.watch(appSettingsProvider).autoSize,
+                            cols: ref.watch(appSettingsProvider).cols,
+                            rows: ref.watch(appSettingsProvider).rows,
+                          ),
+                      context: context);
                 },
                 icon: const Icon(Icons.settings, color: Colors.white70),
               ),
@@ -114,7 +124,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
   }
 }
 
-class MemoryScreenBody extends StatefulWidget {
+class MemoryScreenBody extends ConsumerStatefulWidget {
   const MemoryScreenBody({
     super.key,
     required this.cardSet,
@@ -127,10 +137,10 @@ class MemoryScreenBody extends StatefulWidget {
   final void Function() onRestart;
 
   @override
-  State<MemoryScreenBody> createState() => _MemoryScreenBodyState();
+  ConsumerState<MemoryScreenBody> createState() => _MemoryScreenBodyState();
 }
 
-class _MemoryScreenBodyState extends State<MemoryScreenBody> {
+class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
   List<int> activeCardIndices = [];
   List<String> imageUrls = [];
   List<MemoryCard> cards = [];
@@ -142,8 +152,8 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS));
 
-  late final int cols;
-  late final int rows;
+  late int cols;
+  late int rows;
 
   void precacheImages(BuildContext context, List<String> urls) async {
     for (var url in urls) {
@@ -217,8 +227,13 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   void setup(BoxConstraints constraints) {
     const minWidth = 150;
     const minHeight = 150;
-    cols = (constraints.maxWidth / minWidth).floor();
-    rows = (constraints.maxHeight / minHeight).floor();
+    final appSettings = ref.watch(appSettingsProvider);
+    cols = appSettings.autoSize
+        ? (constraints.maxWidth / minWidth).floor()
+        : appSettings.cols;
+    rows = appSettings.autoSize
+        ? (constraints.maxHeight / minHeight).floor()
+        : appSettings.rows;
     final int numOfPairs = min(
       widget.cardSet.imageUrls.length,
       cols * rows / 2,
