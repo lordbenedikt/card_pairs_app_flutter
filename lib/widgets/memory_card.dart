@@ -1,8 +1,10 @@
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:memory/flipper_customized/flippy.dart';
 import 'package:flutter/material.dart';
 import 'package:memory/providers/sqflite_helper.dart';
 import 'package:memory/widgets/view_image.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:flip_card/flip_card.dart';
 
 class MemoryCard extends StatelessWidget {
   const MemoryCard(
@@ -15,10 +17,10 @@ class MemoryCard extends StatelessWidget {
   final int cardIndex;
   final String imageUrl;
   final void Function(int) onTap;
-  final FlipperController flipperController;
+  final FlipCardController flipperController;
 
-  void isFrontVisible() {
-    flipperController.isFrontVisible;
+  bool isFrontVisible() {
+    return flipperController.state!.isFront;
   }
 
   void viewImage(BuildContext context) {
@@ -58,18 +60,18 @@ class MemoryCard extends StatelessWidget {
             onTap(cardIndex);
           },
           onLongPress: () {
-            if (flipperController.isFrontVisible()) {
+            if (isFrontVisible()) {
               viewImage(context);
             }
           },
-          child: Flipper(
-            startFaceDown: true,
-            width: constraints.maxWidth,
-            height: constraints.maxHeight,
-            margin: const EdgeInsets.all(0),
-            padding: const EdgeInsets.all(0),
-            showShadow: false,
-            backgroundColor: Colors.transparent,
+          child: FlipCard(
+            // startFaceDown: true,
+            // width: constraints.maxWidth,
+            // height: constraints.maxHeight,
+            // margin: const EdgeInsets.all(0),
+            // padding: const EdgeInsets.all(0),
+            // showShadow: false,
+            // backgroundColor: Colors.transparent,
             controller: flipperController,
             front: Card(
               clipBehavior: Clip.hardEdge,

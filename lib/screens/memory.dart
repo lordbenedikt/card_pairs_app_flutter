@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/providers/sqflite_helper.dart';
 import 'package:memory/screens/new_set.dart';
@@ -175,17 +176,17 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
     if (activeCardIndices.contains(index)) {
       return;
     }
-    // if card animation is already playing do nothing
-    if (!cards[index].flipperController.isAnimationCompleted()) {
-      return;
-    }
-    // if card is already discovered & paired do nothing
-    if (cards[index].flipperController.isFrontVisible()) {
-      return;
-    }
+    // // if card animation is already playing do nothing
+    // if (!cards[index].flipperController.isAnimationCompleted()) {
+    //   return;
+    // }
+    // // if card is already discovered & paired do nothing
+    // if (cards[index].flipperController.isFrontVisible()) {
+    //   return;
+    // }
     // reveal card
     if (activeCardIndices.length < 2) {
-      cards[index].flipperController.flipUp();
+      cards[index].flipperController.toggleCard();
       activeCardIndices.add(index);
     }
     // check for pairs, cover cards, clear selection, restart game
@@ -210,10 +211,10 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
           doingPairCheck = false;
         });
         Future.delayed(const Duration(milliseconds: 900), () {
-          mustFlipDown[0].flipperController.flipDown();
+          mustFlipDown[0].flipperController.toggleCard();
 
           Future.delayed(const Duration(milliseconds: 100), () {
-            mustFlipDown[1].flipperController.flipDown();
+            mustFlipDown[1].flipperController.toggleCard();
           }).ignore();
         }).ignore();
       }
@@ -243,7 +244,7 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
           onTap: onTapCard,
           cardIndex: i,
           imageUrl: imageUrls[i],
-          flipperController: FlipperController(dragAxis: DragAxis.vertical),
+          flipperController: FlipCardController(),
         ),
     ];
 
@@ -253,7 +254,7 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   @override
   void dispose() {
     for (var card in cards) {
-      card.flipperController.dispose();
+      // card.flipperController.dispose();
     }
     super.dispose();
   }
