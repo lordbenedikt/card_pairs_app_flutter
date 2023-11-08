@@ -1,15 +1,10 @@
 import 'dart:math';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:memory/models/card_set.dart';
-import 'package:memory/providers/sqflite_helper.dart';
-import 'package:memory/screens/new_set.dart';
 import 'package:memory/widgets/custom_grid.dart';
-import 'package:memory/flipper_customized/flippy.dart';
 import 'package:flutter/material.dart';
 
-import 'package:memory/providers/image_provider.dart';
 import 'package:memory/widgets/memory_card.dart';
 
 class MemoryScreen extends StatefulWidget {
@@ -180,10 +175,10 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
     // if (!cards[index].flipperController.isAnimationCompleted()) {
     //   return;
     // }
-    // // if card is already discovered & paired do nothing
-    // if (cards[index].flipperController.isFrontVisible()) {
-    //   return;
-    // }
+    // if card is already discovered & paired do nothing
+    if (cards[index].isFrontVisible()) {
+      return;
+    }
     // reveal card
     if (activeCardIndices.length < 2) {
       cards[index].flipperController.toggleCard();
@@ -253,9 +248,9 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
 
   @override
   void dispose() {
-    for (var card in cards) {
-      // card.flipperController.dispose();
-    }
+    // for (var card in cards) {
+    //   card.flipperController.dispose();
+    // }
     super.dispose();
   }
 

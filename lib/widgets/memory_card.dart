@@ -1,7 +1,5 @@
 import 'package:flip_card/flip_card_controller.dart';
-import 'package:memory/flipper_customized/flippy.dart';
 import 'package:flutter/material.dart';
-import 'package:memory/providers/sqflite_helper.dart';
 import 'package:memory/widgets/view_image.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:flip_card/flip_card.dart';
@@ -57,9 +55,9 @@ class MemoryCard extends StatelessWidget {
       builder: (context, constraints) {
         final boxShadow = [
           BoxShadow(
-              color: Colors.black.withOpacity(0.4),
+              color: Colors.black.withOpacity(0.2),
               blurRadius: 3,
-              offset: const Offset(2, 2)),
+              offset: const Offset(1, 1)),
         ];
         return GestureDetector(
           onTap: () {
@@ -71,13 +69,7 @@ class MemoryCard extends StatelessWidget {
             }
           },
           child: FlipCard(
-            // startFaceDown: true,
-            // width: constraints.maxWidth,
-            // height: constraints.maxHeight,
-            // margin: const EdgeInsets.all(0),
-            // padding: const EdgeInsets.all(0),
-            // showShadow: false,
-            // backgroundColor: Colors.transparent,
+            flipOnTouch: false,
             side: CardSide.BACK,
             controller: flipperController,
             front: Container(
