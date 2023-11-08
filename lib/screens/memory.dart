@@ -79,7 +79,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
           ),
           Positioned(
             bottom: 10,
-            left: MediaQuery.of(context).size.width / 2 - 52,
+            right: 60,
             child: Container(
               decoration: ShapeDecoration(
                 shape: const CircleBorder(),
@@ -89,23 +89,7 @@ class _MemoryScreenState extends State<MemoryScreen> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                icon: const Icon(Icons.arrow_back, color: Colors.white70),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 10,
-            left: MediaQuery.of(context).size.width / 2 + 5,
-            child: Container(
-              decoration: ShapeDecoration(
-                shape: const CircleBorder(),
-                color: Colors.black.withOpacity(0.6),
-              ),
-              child: IconButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                icon: const Icon(Icons.arrow_back, color: Colors.white70),
+                icon: const Icon(Icons.settings, color: Colors.white70),
               ),
             ),
           ),

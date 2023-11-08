@@ -53,7 +53,7 @@ class MemoryCard extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final inkWellWidget = Material(
+        final inkWellFront = Material(
           color: Colors.transparent,
           child: Theme(
             data: ThemeData(
@@ -62,11 +62,6 @@ class MemoryCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(constraints.maxWidth / 15),
               onTap: () {
                 onTap(cardIndex);
-              },
-              onLongPress: () {
-                if (isFrontVisible()) {
-                  viewImage(context);
-                }
               },
             ),
           ),
@@ -90,10 +85,15 @@ class MemoryCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(constraints.maxWidth / 15),
               boxShadow: boxShadow,
             ),
-            child: FadeInImage(
-              placeholder: MemoryImage(kTransparentImage),
-              image: NetworkImage(imageUrl),
-              fit: BoxFit.cover,
+            child: GestureDetector(
+              onLongPress: () {
+                viewImage(context);
+              },
+              child: FadeInImage(
+                placeholder: MemoryImage(kTransparentImage),
+                image: NetworkImage(imageUrl),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           back: Container(
@@ -113,7 +113,7 @@ class MemoryCard extends StatelessWidget {
               ),
               boxShadow: boxShadow,
             ),
-            child: inkWellWidget,
+            child: inkWellFront,
           ),
         );
       },
