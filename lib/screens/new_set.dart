@@ -27,6 +27,7 @@ class _NewSetScreenState extends State<NewSetScreen> {
   final List<int> _selectedImages = [];
   Uint8List? _pickedCoverImage;
   bool _isLoading = false;
+  double _uploadProgress = 0;
   int _galleryZoom = 3;
   bool _scaling = false;
   String _pickedTitle = '';
@@ -42,6 +43,7 @@ class _NewSetScreenState extends State<NewSetScreen> {
 
     setState(() {
       _isLoading = true;
+      _uploadProgress = 0;
     });
 
     _form.currentState!.save();
@@ -59,6 +61,9 @@ class _NewSetScreenState extends State<NewSetScreen> {
           storageRefParent.child('${const UuidV4().generate()}.png');
       await storageRef.putData(image);
       imageUrls.add(await storageRef.getDownloadURL());
+      setState(() {
+        _uploadProgress += 100 / _pickedImages.length;
+      });
     }
 
     final storageRef =
@@ -120,12 +125,18 @@ class _NewSetScreenState extends State<NewSetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget galleryWidget = const Center(
+    Widget galleryWidget = Center(
       child: SizedBox(
         width: 100,
         height: 100,
-        child: CircularProgressIndicator(
-          strokeWidth: 10,
+        child: Column(
+          children: [
+            const CircularProgressIndicator(
+              strokeWidth: 10,
+            ),
+            const SizedBox(height: 20),
+            Text('${_uploadProgress.ceil()} %'),
+          ],
         ),
       ),
     );
