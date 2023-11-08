@@ -1,6 +1,8 @@
 import 'dart:math';
+import 'dart:io' show Platform;
 
 import 'package:flip_card/flip_card_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/widgets/custom_grid.dart';
 import 'package:flutter/material.dart';
@@ -151,6 +153,7 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   List<int> discoveredCards = [];
   bool doingPairCheck = false;
   bool setupDone = false;
+  bool showFlipAnimation = !((Platform.isAndroid || Platform.isIOS) && kIsWeb);
 
   late final int cols;
   late final int rows;
@@ -181,7 +184,9 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
     }
     // reveal card
     if (activeCardIndices.length < 2) {
-      cards[index].flipperController.toggleCard();
+      showFlipAnimation
+          ? cards[index].flipperController.toggleCard()
+          : cards[index].flipperController.toggleCardWithoutAnimation();
       activeCardIndices.add(index);
     }
     // check for pairs, cover cards, clear selection, restart game
@@ -206,10 +211,16 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
           doingPairCheck = false;
         });
         Future.delayed(const Duration(milliseconds: 900), () {
-          mustFlipDown[0].flipperController.toggleCard();
+          showFlipAnimation
+              ? mustFlipDown[0].flipperController.toggleCard()
+              : mustFlipDown[0].flipperController.toggleCardWithoutAnimation();
 
           Future.delayed(const Duration(milliseconds: 100), () {
-            mustFlipDown[1].flipperController.toggleCard();
+            showFlipAnimation
+                ? mustFlipDown[1].flipperController.toggleCard()
+                : mustFlipDown[1]
+                    .flipperController
+                    .toggleCardWithoutAnimation();
           }).ignore();
         }).ignore();
       }
@@ -219,10 +230,8 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   void setup(BoxConstraints constraints) {
     const minWidth = 150;
     const minHeight = 150;
-    cols = 1;
-    (constraints.maxWidth / minWidth).floor();
-    rows = 2;
-    (constraints.maxHeight / minHeight).floor();
+    cols = (constraints.maxWidth / minWidth).floor();
+    rows = (constraints.maxHeight / minHeight).floor();
     final int numOfPairs = min(
       widget.cardSet.imageUrls.length,
       cols * rows / 2,
