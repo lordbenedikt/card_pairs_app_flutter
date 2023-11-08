@@ -72,10 +72,11 @@ class MemoryCard extends StatelessWidget {
             // padding: const EdgeInsets.all(0),
             // showShadow: false,
             // backgroundColor: Colors.transparent,
+            side: CardSide.BACK,
             controller: flipperController,
-            front: Card(
+            front: Container(
               clipBehavior: Clip.hardEdge,
-              shape: RoundedRectangleBorder(
+              decoration: BoxDecoration(
                   borderRadius:
                       BorderRadius.circular(constraints.maxWidth / 15)),
               child: FadeInImage(
@@ -84,21 +85,17 @@ class MemoryCard extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-            back: Card(
+            back: Container(
               clipBehavior: Clip.hardEdge,
-              shape: RoundedRectangleBorder(
-                  borderRadius:
-                      BorderRadius.circular(constraints.maxWidth / 15)),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    center: const Alignment(0.5, 0.5),
-                    radius: 3,
-                    colors: [
-                      backColor,
-                      backColorDarker,
-                    ],
-                  ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(constraints.maxWidth / 15),
+                gradient: RadialGradient(
+                  center: const Alignment(0.5, 0.5),
+                  radius: 3,
+                  colors: [
+                    backColor,
+                    backColorDarker,
+                  ],
                 ),
               ),
             ),
