@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:memory/models/user.dart';
 import 'package:memory/widgets/user_image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,6 +28,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Uint8List? _selectedImage;
   var _isAuthenticating = false;
   var _validationDone = false;
+  var _obscurePassword = true;
 
   void _submit() async {
     _validationDone = true;
@@ -179,23 +181,40 @@ class _AuthScreenState extends State<AuthScreen> {
                                 onSaved: (value) {
                                   _enteredUsername = value!;
                                 }),
-                          TextFormField(
-                              key: const ValueKey('password'),
-                              decoration:
-                                  const InputDecoration(labelText: 'Password'),
-                              obscureText: true,
-                              validator: (value) {
-                                if (value == null || value.trim().length < 6) {
-                                  return 'Password must be at least 6 characters long.';
-                                }
-                                return null;
+                          Row(children: [
+                            Expanded(
+                              child: TextFormField(
+                                key: const ValueKey('password'),
+                                decoration: const InputDecoration(
+                                    labelText: 'Password'),
+                                obscureText: _obscurePassword,
+                                validator: (value) {
+                                  if (value == null ||
+                                      value.trim().length < 6) {
+                                    return 'Password must be at least 6 characters long.';
+                                  }
+                                  return null;
+                                },
+                                onFieldSubmitted: (value) {
+                                  _submit();
+                                },
+                                onSaved: (value) {
+                                  _enteredPassword = value!;
+                                },
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                setState(
+                                    () => _obscurePassword = !_obscurePassword);
                               },
-                              onFieldSubmitted: (value) {
-                                _submit();
-                              },
-                              onSaved: (value) {
-                                _enteredPassword = value!;
-                              }),
+                              icon: Icon(
+                                _obscurePassword
+                                    ? FontAwesomeIcons.eyeSlash
+                                    : FontAwesomeIcons.eye,
+                              ),
+                            ),
+                          ]),
                           const SizedBox(height: 12),
                           if (_isAuthenticating)
                             const CircularProgressIndicator(),

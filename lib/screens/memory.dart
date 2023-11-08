@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'dart:io' show Platform;
+import 'dart:io';
 
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/foundation.dart';
@@ -153,7 +153,9 @@ class _MemoryScreenBodyState extends State<MemoryScreenBody> {
   List<int> discoveredCards = [];
   bool doingPairCheck = false;
   bool setupDone = false;
-  bool showFlipAnimation = !((Platform.isAndroid || Platform.isIOS) && kIsWeb);
+  bool showFlipAnimation = !(kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS));
 
   late final int cols;
   late final int rows;
