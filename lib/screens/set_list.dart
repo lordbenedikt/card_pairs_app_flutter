@@ -8,6 +8,7 @@ import 'package:memory/providers/user_provider.dart';
 import 'package:memory/screens/memory.dart';
 import 'package:memory/screens/new_set.dart';
 import 'package:memory/widgets/add_users.dart';
+import 'package:memory/widgets/delete_set_dialog.dart';
 
 class SetListScreen extends ConsumerWidget {
   const SetListScreen(this.groupUid, {super.key});
@@ -65,6 +66,14 @@ class SetListScreen extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final set = sets[index];
                 return GestureDetector(
+                  onLongPress: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return DeleteSetDialog(set: set);
+                      },
+                    );
+                  },
                   onTap: () {
                     // SqfliteHelper.addCardSet(set);
 
