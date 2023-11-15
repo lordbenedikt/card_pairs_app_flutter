@@ -66,7 +66,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '206763302427',
     projectId: 'memory-app-a167e',
     storageBucket: 'memory-app-a167e.appspot.com',
-    iosBundleId: 'com.example.memory',
+    iosBundleId: 'com.benjen.memory',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -75,6 +75,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '206763302427',
     projectId: 'memory-app-a167e',
     storageBucket: 'memory-app-a167e.appspot.com',
-    iosBundleId: 'com.example.memory.RunnerTests',
+    iosBundleId: 'com.benjen.memory.RunnerTests',
   );
 }

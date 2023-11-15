@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 
-import 'package:flutter_image_compress/flutter_image_compress.dart';
-
 class ImagePathProvider {
   static List<String> imagePaths = [];
   static List<String> allAssetPaths = [];

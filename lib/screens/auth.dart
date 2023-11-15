@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_svg/svg.dart';
@@ -51,9 +50,11 @@ class _AuthScreenState extends State<AuthScreen> {
         await _firebase.signInWithEmailAndPassword(
             email: _enteredEmail, password: _enteredPassword);
       } on FirebaseAuthException catch (error) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(error.message ?? 'Authentification failed.')));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(error.message ?? 'Authentification failed.')));
+        }
       }
     } else {
       try {
@@ -63,7 +64,7 @@ class _AuthScreenState extends State<AuthScreen> {
         final storageRef = FirebaseStorage.instance
             .ref()
             .child('user_images')
-            .child('${userCredentials.user!.uid}.jpg');
+            .child(userCredentials.user!.uid);
 
         await storageRef.putData(_selectedImage!);
         final imageUrl = await storageRef.getDownloadURL();
@@ -78,9 +79,11 @@ class _AuthScreenState extends State<AuthScreen> {
               imageUrl: imageUrl,
             ).toJson());
       } on FirebaseAuthException catch (error) {
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(error.message ?? 'Authentification failed.')));
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(error.message ?? 'Authentification failed.')));
+        }
       }
     }
     setState(() {
@@ -210,8 +213,8 @@ class _AuthScreenState extends State<AuthScreen> {
                               },
                               icon: Icon(
                                 _obscurePassword
-                                    ? FontAwesomeIcons.eyeSlash
-                                    : FontAwesomeIcons.eye,
+                                    ? FontAwesomeIcons.eye
+                                    : FontAwesomeIcons.eyeSlash,
                               ),
                             ),
                           ]),

@@ -25,11 +25,11 @@ class _SetSizeDialogState extends ConsumerState<SetSizeDialog> {
   late int _rows;
 
   void _confirm() {
+    Navigator.of(context).pop();
     ref
         .read(appSettingsProvider.notifier)
         .updateAppSettings(autoSize: _autoSize, cols: _cols, rows: _rows);
     widget.onRestart();
-    Navigator.of(context).pop();
   }
 
   @override
@@ -45,7 +45,7 @@ class _SetSizeDialogState extends ConsumerState<SetSizeDialog> {
     return Dialog(
       // insetPadding: EdgeInsets.all(150),
       child: Padding(
-        padding: EdgeInsets.symmetric(
+        padding: const EdgeInsets.symmetric(
           vertical: 20,
           horizontal: 20,
         ),
@@ -72,7 +72,7 @@ class _SetSizeDialogState extends ConsumerState<SetSizeDialog> {
                       ),
                   ],
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 DropdownMenu<int>(
                   label: const Text('rows'),
                   initialSelection: _rows,
@@ -91,11 +91,11 @@ class _SetSizeDialogState extends ConsumerState<SetSizeDialog> {
                 ),
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             SizedBox(
               width: 160,
               child: CheckboxListTile(
-                title: Text('autosize'),
+                title: const Text('autosize'),
                 value: _autoSize,
                 onChanged: (_) {
                   setState(() {
@@ -104,7 +104,7 @@ class _SetSizeDialogState extends ConsumerState<SetSizeDialog> {
                 },
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [

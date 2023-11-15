@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -113,6 +111,7 @@ class _NewGroupScreenState extends State<NewGroupScreen> {
                             if (value == null || value.length < 2) {
                               return 'Must be at least 2 characters';
                             }
+                            return null;
                           },
                           onSaved: (value) {
                             _pickedTitle = value!;

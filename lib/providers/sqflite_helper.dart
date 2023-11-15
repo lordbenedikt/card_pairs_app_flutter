@@ -1,13 +1,9 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
-import 'package:memory/models/card_set.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart' as syspaths;
+// import 'package:path_provider/path_provider.dart' as syspaths;
 import 'package:sqflite/sqflite.dart' as sql;
-import 'package:sqflite/sqlite_api.dart';
+// import 'package:sqflite/sqlite_api.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 // import 'package:sqflite_ffi/sqflite_ffi.dart';
 
@@ -15,13 +11,13 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 // Drift supports flutter web
 
 class SqfliteHelper {
-  static late final db;
+  static late final Database db;
 
   static init() async {
     if (kIsWeb) {
       databaseFactory = databaseFactoryFfi;
     }
-    db = _getDatabase();
+    db = await _getDatabase();
   }
 
   static Future<Database> _getDatabase() async {
@@ -40,10 +36,10 @@ class SqfliteHelper {
   static Future<Uint8List> getImage(String url) async {
     final table = await db.query('images', where: 'url = ?', whereArgs: [url]);
     if (table.isEmpty) {
-      print('load image from network');
+      // print('load image from network');
       return downloadImage(url);
     }
-    print('load image from sqflite');
+    // print('load image from sqflite');
     return table.first['data'] as Uint8List;
   }
 

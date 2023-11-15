@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.memory</string>
+	<string>com.benjen.memory</string>
 	<key>PROJECT_ID</key>
 	<string>memory-app-a167e</string>
 	<key>STORAGE_BUCKET</key>

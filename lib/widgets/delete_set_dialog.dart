@@ -78,6 +78,5 @@ class _DeleteSetDialogState extends State<DeleteSetDialog> {
         ),
       ),
     );
-    ;
   }
 }

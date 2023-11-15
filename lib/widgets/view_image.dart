@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:memory/widgets/responsive_icon_button.dart';
 
 class ViewImage extends StatelessWidget {
   const ViewImage(this.url, {super.key});
@@ -19,7 +20,7 @@ class ViewImage extends StatelessWidget {
                 shape: const CircleBorder(),
                 color: Colors.black.withOpacity(0.6),
               ),
-              child: IconButton(
+              child: ResponsiveIconButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },

@@ -30,6 +30,5 @@ class GroupListItem extends StatelessWidget {
             .copyWith(color: Theme.of(context).colorScheme.onBackground),
       ),
     );
-    ;
   }
 }

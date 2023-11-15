@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/providers/card_set_provider.dart';
@@ -26,31 +27,33 @@ class SetListScreen extends ConsumerWidget {
         centerTitle: true,
         title: Text(group.title),
         actions: [
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return Dialog(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: SizedBox(
-                        height: 400,
-                        child: AddUsers(group),
+          if (group.admin == FirebaseAuth.instance.currentUser!.uid)
+            IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return Dialog(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: SizedBox(
+                          height: 400,
+                          child: AddUsers(group),
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
-            icon: const Icon(Icons.group_add_rounded),
-          ),
+                    );
+                  },
+                );
+              },
+              icon: const Icon(Icons.group_add_rounded),
+            ),
           IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                 return NewSetScreen(group: group);
               }));
             },
+            tooltip: 'create card set',
             icon: const Icon(Icons.add),
           ),
         ],

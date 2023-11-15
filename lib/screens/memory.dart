@@ -1,15 +1,16 @@
 import 'dart:math';
-import 'dart:io';
 
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/providers/app_settings_provider.dart';
+import 'package:memory/widgets/confirm_dialog.dart';
 import 'package:memory/widgets/custom_grid.dart';
 import 'package:flutter/material.dart';
 
 import 'package:memory/widgets/memory_card.dart';
+import 'package:memory/widgets/responsive_icon_button.dart';
 import 'package:memory/widgets/set_size_dialog.dart';
 
 class MemoryScreen extends ConsumerStatefulWidget {
@@ -52,6 +53,7 @@ class _MemoryScreenState extends ConsumerState<MemoryScreen> {
         //     ),
         //   ),
         //   child:
+
         Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Stack(
@@ -67,54 +69,54 @@ class _MemoryScreenState extends ConsumerState<MemoryScreen> {
           Positioned(
             bottom: 10,
             left: 10,
-            child: Container(
-              decoration: ShapeDecoration(
-                shape: const CircleBorder(),
-                color: Colors.black.withOpacity(0.6),
-              ),
-              child: IconButton(
-                onPressed: () {
+            child: ResponsiveIconButton(
+              onPressed: () async {
+                bool? wasConfirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => const ConfirmDialog(
+                    text: 'Do you want to leave? All progress will be lost.',
+                  ),
+                );
+                if ((wasConfirmed ?? false) && context.mounted) {
                   Navigator.of(context).pop();
-                },
-                icon: const Icon(Icons.arrow_back, color: Colors.white70),
-              ),
+                }
+              },
+              icon: const Icon(Icons.arrow_back, color: Colors.white70),
             ),
           ),
           Positioned(
             bottom: 10,
             right: 60,
-            child: Container(
-              decoration: ShapeDecoration(
-                shape: const CircleBorder(),
-                color: Colors.black.withOpacity(0.6),
-              ),
-              child: IconButton(
-                onPressed: () {
-                  showDialog(
-                      builder: (context) => SetSizeDialog(
-                            onRestart: restart,
-                            autoSize: ref.watch(appSettingsProvider).autoSize,
-                            cols: ref.watch(appSettingsProvider).cols,
-                            rows: ref.watch(appSettingsProvider).rows,
-                          ),
-                      context: context);
-                },
-                icon: const Icon(Icons.settings, color: Colors.white70),
-              ),
+            child: ResponsiveIconButton(
+              onPressed: () {
+                showDialog(
+                    builder: (context) => SetSizeDialog(
+                          onRestart: restart,
+                          autoSize: ref.watch(appSettingsProvider).autoSize,
+                          cols: ref.watch(appSettingsProvider).cols,
+                          rows: ref.watch(appSettingsProvider).rows,
+                        ),
+                    context: context);
+              },
+              icon: const Icon(Icons.settings, color: Colors.white70),
             ),
           ),
           Positioned(
             bottom: 10,
             right: 10,
-            child: Container(
-              decoration: ShapeDecoration(
-                shape: const CircleBorder(),
-                color: Colors.black.withOpacity(0.6),
-              ),
-              child: IconButton(
-                onPressed: restart,
-                icon: const Icon(Icons.replay, color: Colors.white70),
-              ),
+            child: ResponsiveIconButton(
+              onPressed: () async {
+                bool? wasConfirmed = await showDialog<bool>(
+                  context: context,
+                  builder: (ctx) => const ConfirmDialog(
+                    text: 'Do you want to restart? All progress will be lost.',
+                  ),
+                );
+                if ((wasConfirmed ?? false) && context.mounted) {
+                  restart();
+                }
+              },
+              icon: const Icon(Icons.replay, color: Colors.white70),
             ),
           ),
         ],

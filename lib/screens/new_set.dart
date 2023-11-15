@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/models/group.dart';
 import 'package:memory/widgets/circular_image_picker.dart';
+import 'package:memory/widgets/confirm_dialog.dart';
 import 'package:memory/widgets/gallery_grid.dart';
 import 'package:uuid/v4.dart';
 
@@ -112,9 +112,11 @@ class _NewSetScreenState extends State<NewSetScreen> {
         images.add(await imageXFile.readAsBytes());
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: $error')));
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Error: $error')));
+      }
     }
 
     setState(() {
@@ -176,121 +178,132 @@ class _NewSetScreenState extends State<NewSetScreen> {
             );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          'Create new Set',
-          textAlign: TextAlign.center,
+    return WillPopScope(
+      onWillPop: () async {
+        bool? allowBackNavigation = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => const ConfirmDialog(
+              text:
+                  'Do you really want to leave? All changes will be discarded.'),
+        );
+        return allowBackNavigation ?? false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'Create new Set',
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            if (_selectedImages.length == _pickedImages.length &&
+                _pickedImages.isNotEmpty)
+              IconButton(
+                tooltip: 'clear selection',
+                onPressed: () {
+                  setState(() {
+                    _selectedImages.clear();
+                  });
+                },
+                icon: const Icon(Icons.close),
+              ),
+            if (_selectedImages.isNotEmpty &&
+                _selectedImages.length != _pickedImages.length)
+              IconButton(
+                tooltip: 'select all',
+                onPressed: () {
+                  setState(() {
+                    _selectedImages.clear();
+                    _selectedImages.addAll(
+                        List.generate(_pickedImages.length, (index) => index));
+                  });
+                },
+                icon: const Icon(Icons.select_all),
+              ),
+            if (_selectedImages.isNotEmpty)
+              IconButton(
+                tooltip: 'delete selected images',
+                onPressed: () {
+                  _selectedImages.sort((a, b) => b - a);
+                  setState(() {
+                    for (final index in _selectedImages) {
+                      _pickedImages.removeAt(index);
+                    }
+                  });
+                  _selectedImages.clear();
+                },
+                icon: const Icon(Icons.delete),
+              ),
+          ],
         ),
-        actions: [
-          if (_selectedImages.length == _pickedImages.length &&
-              _pickedImages.isNotEmpty)
-            IconButton(
-              tooltip: 'clear selection',
-              onPressed: () {
-                setState(() {
-                  _selectedImages.clear();
-                });
-              },
-              icon: const Icon(Icons.close),
-            ),
-          if (_selectedImages.isNotEmpty &&
-              _selectedImages.length != _pickedImages.length)
-            IconButton(
-              tooltip: 'select all',
-              onPressed: () {
-                setState(() {
-                  _selectedImages.clear();
-                  _selectedImages.addAll(
-                      List.generate(_pickedImages.length, (index) => index));
-                });
-              },
-              icon: const Icon(Icons.select_all),
-            ),
-          if (_selectedImages.isNotEmpty)
-            IconButton(
-              tooltip: 'delete selected images',
-              onPressed: () {
-                _selectedImages.sort((a, b) => b - a);
-                setState(() {
-                  for (final index in _selectedImages) {
-                    _pickedImages.removeAt(index);
-                  }
-                });
-                _selectedImages.clear();
-              },
-              icon: const Icon(Icons.delete),
-            ),
-        ],
-      ),
-      body: Column(
-        children: [
-          Expanded(child: galleryWidget),
-          Column(
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                child: Form(
-                  key: _form,
-                  child: TextFormField(
-                    maxLength: 50,
-                    onSaved: (value) {
-                      _pickedTitle = value!;
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Must be at least 2 characters long';
-                      }
-                      if (value.length < 2) {
-                        return 'Must be at least 2 characters long';
-                      }
-                      return null;
-                    },
-                    decoration: const InputDecoration(label: Text("Title")),
+        body: Column(
+          children: [
+            Expanded(child: galleryWidget),
+            Column(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  child: Form(
+                    key: _form,
+                    child: TextFormField(
+                      maxLength: 50,
+                      onSaved: (value) {
+                        _pickedTitle = value!;
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Must be at least 2 characters long';
+                        }
+                        if (value.length < 2) {
+                          return 'Must be at least 2 characters long';
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(label: Text("Title")),
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    CircularImagePicker(
-                        isEnabled: !_isLoading,
-                        onStart: () => setState(() {
-                              _isLoading = true;
-                            }),
-                        onPickImage: (image) {
-                          _pickedCoverImage = image;
-                          setState(() {
-                            _isLoading = false;
-                          });
-                        },
-                        label: 'Add cover image'),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton.icon(
-                              onPressed: !_isLoading ? _pickImages : null,
-                              icon: const Icon(Icons.add),
-                              label: const Text("Add images")),
-                          const SizedBox(height: 20),
-                          ElevatedButton(
-                              onPressed: !_isLoading ? _submit : null,
-                              child: const Text("Submit")),
-                        ],
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      CircularImagePicker(
+                          isEnabled: !_isLoading,
+                          onStart: () => setState(() {
+                                _isLoading = true;
+                              }),
+                          onPickImage: (image) {
+                            _pickedCoverImage = image;
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          },
+                          label: 'Add cover image'),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            ElevatedButton.icon(
+                                onPressed: !_isLoading ? _pickImages : null,
+                                icon: const Icon(Icons.add),
+                                label: const Text("Add images")),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                                onPressed: !_isLoading ? _submit : null,
+                                child: const Text("Submit")),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          )
-        ],
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

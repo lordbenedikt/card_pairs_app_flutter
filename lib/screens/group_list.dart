@@ -24,6 +24,25 @@ class _GroupListScreenState extends ConsumerState<GroupListScreen> {
         title: const Text('My Groups'),
         actions: [
           IconButton(
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return Dialog(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: SizedBox(
+                        height: 400,
+                        child: Container(),
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+            icon: const Icon(Icons.person),
+          ),
+          IconButton(
               onPressed: () {
                 FirebaseAuth.instance.signOut();
               },
