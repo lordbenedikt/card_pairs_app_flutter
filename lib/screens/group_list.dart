@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/providers/group_provider.dart';
+import 'package:memory/screens/profile.dart';
 import 'package:memory/screens/set_list.dart';
 import 'package:memory/screens/new_group.dart';
 
@@ -22,32 +23,13 @@ class _GroupListScreenState extends ConsumerState<GroupListScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('My Groups'),
-        actions: [
-          IconButton(
+        leading: IconButton(
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return Dialog(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: SizedBox(
-                        height: 400,
-                        child: Container(),
-                      ),
-                    ),
-                  );
-                },
-              );
+              FirebaseAuth.instance.signOut();
             },
-            icon: const Icon(Icons.person),
-          ),
-          IconButton(
-              onPressed: () {
-                FirebaseAuth.instance.signOut();
-              },
-              tooltip: 'sign out',
-              icon: const Icon(Icons.logout)),
+            tooltip: 'sign out',
+            icon: const Icon(Icons.logout)),
+        actions: [
           IconButton(
               onPressed: () {
                 Navigator.of(context)
@@ -57,6 +39,16 @@ class _GroupListScreenState extends ConsumerState<GroupListScreen> {
               },
               tooltip: 'create group',
               icon: const Icon(Icons.add)),
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ProfileScreen(),
+                ),
+              );
+            },
+            icon: const Icon(Icons.person),
+          ),
         ],
       ),
       body: Center(

@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UserImagePicker extends StatefulWidget {
-  const UserImagePicker(
-      {super.key, required this.onPickImage, this.initialImage});
+  const UserImagePicker({
+    super.key,
+    required this.onPickImage,
+    this.radius = 50,
+    this.initialImage,
+  });
 
+  final double radius;
   final void Function(Uint8List pickedImage) onPickImage;
-  final Uint8List? initialImage;
+  final ImageProvider? initialImage;
 
   @override
   State<UserImagePicker> createState() => _UserImagePickerState();
@@ -16,12 +21,6 @@ class UserImagePicker extends StatefulWidget {
 
 class _UserImagePickerState extends State<UserImagePicker> {
   Uint8List? _pickedImage;
-
-  @override
-  void initState() {
-    _pickedImage = widget.initialImage;
-    super.initState();
-  }
 
   void _pickImage(ImageSource source) async {
     final pickedImageXFile = await ImagePicker().pickImage(
@@ -42,10 +41,11 @@ class _UserImagePickerState extends State<UserImagePicker> {
     return Column(
       children: [
         CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.grey,
-            foregroundImage:
-                _pickedImage != null ? MemoryImage(_pickedImage!) : null),
+          radius: widget.radius,
+          backgroundColor: Colors.black,
+          foregroundImage: widget.initialImage ??
+              (_pickedImage != null ? MemoryImage(_pickedImage!) : null),
+        ),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           IconButton(
             onPressed: () {

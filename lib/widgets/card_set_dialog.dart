@@ -2,17 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:memory/models/card_set.dart';
+import 'package:memory/screens/view_card_set.dart';
 
-class DeleteSetDialog extends StatefulWidget {
-  const DeleteSetDialog({super.key, required this.set});
+class CardSetDialog extends StatefulWidget {
+  const CardSetDialog({super.key, required this.set});
 
   final CardSet set;
 
   @override
-  State<DeleteSetDialog> createState() => _DeleteSetDialogState();
+  State<CardSetDialog> createState() => _CardSetDialogState();
 }
 
-class _DeleteSetDialogState extends State<DeleteSetDialog> {
+class _CardSetDialogState extends State<CardSetDialog> {
   bool _buttonIsEnabled = false;
 
   void _deleteSet(CardSet set) async {
@@ -38,6 +39,23 @@ class _DeleteSetDialogState extends State<DeleteSetDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ViewCardSet(widget.set),
+                    ),
+                  );
+                },
+                child: Text(
+                  'View images',
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyMedium!
+                      .copyWith(color: Theme.of(context).colorScheme.onPrimary),
+                ),
+              ),
+              const Divider(),
               Text('To delete this card set, type "${widget.set.title}"'),
               TextField(
                 onChanged: (value) {

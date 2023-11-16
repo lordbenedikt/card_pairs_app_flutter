@@ -7,7 +7,7 @@ import 'package:sqflite/sqflite.dart' as sql;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 // import 'package:sqflite_ffi/sqflite_ffi.dart';
 
-// TODO: Use Drift!!!
+// TODO: Save images locally!! Use Drift?
 // Drift supports flutter web
 
 class SqfliteHelper {

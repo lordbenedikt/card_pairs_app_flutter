@@ -25,7 +25,7 @@ class MemoryCard extends StatelessWidget {
     showDialog(
         context: context,
         builder: (context) {
-          return ViewImage(imageUrl);
+          return ViewImage(url: imageUrl);
         });
   }
 

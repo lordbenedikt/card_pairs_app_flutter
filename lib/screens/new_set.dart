@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/models/group.dart';
@@ -27,9 +28,8 @@ class _NewSetScreenState extends State<NewSetScreen> {
   final List<int> _selectedImages = [];
   Uint8List? _pickedCoverImage;
   bool _isLoading = false;
+  bool _isSubmitting = false;
   double _uploadProgress = 0;
-  int _galleryZoom = 3;
-  bool _scaling = false;
   String _pickedTitle = '';
 
   final _form = GlobalKey<FormState>();
@@ -43,6 +43,7 @@ class _NewSetScreenState extends State<NewSetScreen> {
 
     setState(() {
       _isLoading = true;
+      _isSubmitting = true;
       _uploadProgress = 0;
     });
 
@@ -129,15 +130,17 @@ class _NewSetScreenState extends State<NewSetScreen> {
   Widget build(BuildContext context) {
     Widget galleryWidget = Center(
       child: SizedBox(
-        width: 100,
-        height: 100,
+        width: 200,
+        height: 200,
         child: Column(
           children: [
             const CircularProgressIndicator(
               strokeWidth: 10,
             ),
-            const SizedBox(height: 20),
-            Text('${_uploadProgress.ceil()} %'),
+            if (!_isSubmitting) ...[
+              const SizedBox(height: 20),
+              Text('${_uploadProgress.ceil()} %'),
+            ]
           ],
         ),
       ),
@@ -145,30 +148,11 @@ class _NewSetScreenState extends State<NewSetScreen> {
 
     if (!_isLoading) {
       galleryWidget = _pickedImages.isNotEmpty
-          ? GestureDetector(
-              onScaleStart: (details) {
-                _scaling = true;
-              },
-              onScaleEnd: (details) {
-                _scaling = false;
-              },
-              onScaleUpdate: (details) => setState(() {
-                if (_scaling) {
-                  if (details.scale < 1) {
-                    _galleryZoom = max(0, _galleryZoom - 1);
-                    _scaling = false;
-                  } else if (details.scale > 1) {
-                    _galleryZoom = min(3, _galleryZoom + 1);
-                    _scaling = false;
-                  }
-                }
-              }),
-              child: GalleryGrid(
-                pickedImages: _pickedImages,
-                selectedImages: _selectedImages,
-                onChangeSelection: _changeSelection,
-                zoom: _galleryZoom,
-              ),
+          ? GalleryGrid(
+              pickedImages: _pickedImages,
+              selectedImages: _selectedImages,
+              onChangeSelection: _changeSelection,
+              selectedIcon: FontAwesomeIcons.circleXmark,
             )
           : Center(
               child: Text('No images in this card set.',

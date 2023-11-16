@@ -134,7 +134,9 @@ class _AuthScreenState extends State<AuthScreen> {
                                   _selectedImage = pickedImage;
                                 });
                               },
-                              initialImage: _selectedImage,
+                              initialImage: _selectedImage == null
+                                  ? null
+                                  : MemoryImage(_selectedImage!),
                             ),
                           if (!_isLogin &&
                               _selectedImage == null &&

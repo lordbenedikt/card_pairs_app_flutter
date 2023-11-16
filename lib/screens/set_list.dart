@@ -9,7 +9,7 @@ import 'package:memory/providers/user_provider.dart';
 import 'package:memory/screens/memory.dart';
 import 'package:memory/screens/new_set.dart';
 import 'package:memory/widgets/add_users.dart';
-import 'package:memory/widgets/delete_set_dialog.dart';
+import 'package:memory/widgets/card_set_dialog.dart';
 
 class SetListScreen extends ConsumerWidget {
   const SetListScreen(this.groupUid, {super.key});
@@ -49,9 +49,13 @@ class SetListScreen extends ConsumerWidget {
             ),
           IconButton(
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return NewSetScreen(group: group);
-              }));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return NewSetScreen(group: group);
+                  },
+                ),
+              );
             },
             tooltip: 'create card set',
             icon: const Icon(Icons.add),
@@ -73,7 +77,7 @@ class SetListScreen extends ConsumerWidget {
                     showDialog(
                       context: context,
                       builder: (context) {
-                        return DeleteSetDialog(set: set);
+                        return CardSetDialog(set: set);
                       },
                     );
                   },
