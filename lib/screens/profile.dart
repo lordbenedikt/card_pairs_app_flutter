@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/models/user.dart';
@@ -17,18 +16,42 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   final _form = GlobalKey<FormState>();
-  late final AppUser user;
+  AppUser? user;
   Uint8List? newImage;
+
+  void loadUser() async {
+    for (var i = 0; i < 20; i++) {
+      try {
+        setState(() {
+          user = ref.read(usersProvider).firstWhere(
+              (user) => user.uid == FirebaseAuth.instance.currentUser!.uid);
+        });
+      } catch (error) {
+        await Future.delayed(const Duration(milliseconds: 100));
+      }
+    }
+  }
 
   @override
   void initState() {
-    user = ref.read(usersProvider).firstWhere(
-        (user) => user.uid == FirebaseAuth.instance.currentUser!.uid);
+    loadUser();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (user == null) {
+      return Scaffold(
+        appBar: AppBar(),
+        body: const Center(
+          child: SizedBox(
+            width: 200,
+            height: 200,
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
     final ImageProvider? newImageProvider =
         newImage != null ? MemoryImage(newImage!) : null;
 
@@ -49,7 +72,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   child: UserImagePicker(
                     radius: constraints.maxHeight > 500 ? 120 : 0,
                     initialImage:
-                        newImageProvider ?? NetworkImage(user.imageUrl),
+                        newImageProvider ?? NetworkImage(user!.imageUrl),
                     onPickImage: (pickedImage) {
                       setState(() {
                         newImage = pickedImage;
@@ -66,14 +89,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         decoration: const InputDecoration(
                           label: Text('Username'),
                         ),
-                        initialValue: user.username,
+                        initialValue: user!.username,
                         style: Theme.of(context).textTheme.titleLarge!,
                       ),
                       TextFormField(
                         decoration: const InputDecoration(
                           label: Text('Email'),
                         ),
-                        initialValue: user.email,
+                        initialValue: user!.email,
                         style: Theme.of(context).textTheme.titleLarge!,
                       ),
                     ],

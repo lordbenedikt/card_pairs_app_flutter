@@ -35,6 +35,7 @@ void main() async {
           colorScheme: kDarkColorScheme,
         ),
         theme: ThemeData().copyWith(
+          useMaterial3: false,
           colorScheme: kColorScheme,
         ),
         debugShowCheckedModeBanner: false,

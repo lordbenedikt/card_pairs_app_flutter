@@ -226,7 +226,8 @@ class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
     }
   }
 
-  void setup(BoxConstraints constraints) {
+  void setup(BuildContext context, BoxConstraints constraints) {
+    startOrientation = MediaQuery.of(context).orientation;
     const minWidth = 150;
     const minHeight = 150;
     final appSettings = ref.watch(appSettingsProvider);
@@ -274,7 +275,7 @@ class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
     return LayoutBuilder(
       builder: (context, constraints) {
         if (!setupDone) {
-          setup(constraints);
+          setup(context, constraints);
           setupDone = true;
         }
         return CustomGrid(

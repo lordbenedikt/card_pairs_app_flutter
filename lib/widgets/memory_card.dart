@@ -77,7 +77,8 @@ class MemoryCard extends StatelessWidget {
           side: CardSide.BACK,
           controller: flipperController,
           front: Container(
-            margin: EdgeInsets.all(constraints.maxWidth / 50),
+            margin: EdgeInsets.all(
+                (constraints.maxWidth + constraints.maxHeight) / 100),
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             clipBehavior: Clip.hardEdge,
