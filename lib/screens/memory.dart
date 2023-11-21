@@ -227,7 +227,6 @@ class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
   }
 
   void setup(BuildContext context, BoxConstraints constraints) {
-    startOrientation = MediaQuery.of(context).orientation;
     const minWidth = 150;
     const minHeight = 150;
     final appSettings = ref.watch(appSettingsProvider);

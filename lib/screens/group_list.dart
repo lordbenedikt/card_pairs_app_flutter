@@ -3,9 +3,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/providers/group_provider.dart';
+import 'package:memory/providers/unsplash_provider.dart';
+import 'package:memory/screens/memory.dart';
 import 'package:memory/screens/profile.dart';
 import 'package:memory/screens/set_list.dart';
 import 'package:memory/screens/new_group.dart';
+import 'package:memory/widgets/random_set_dialog.dart';
 
 class GroupListScreen extends ConsumerStatefulWidget {
   const GroupListScreen({super.key});
@@ -91,9 +94,25 @@ class _GroupListScreenState extends ConsumerState<GroupListScreen> {
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 child: ListView.builder(
-                  itemCount: myGroups.length,
+                  itemCount: myGroups.length + 1,
                   itemBuilder: (context, index) {
-                    final group = myGroups[index];
+                    if (index == 0) {
+                      return ListTile(
+                        onTap: () {
+                          showDialog(
+                              context: context,
+                              builder: (context) => const RandomSetDialog());
+                        },
+                        title: Text(
+                          'Generate with Unsplash API',
+                          style:
+                              Theme.of(context).textTheme.titleMedium!.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                      );
+                    }
+                    final group = myGroups[index - 1];
                     return ListTile(
                       onTap: () {
                         Navigator.of(context).push(MaterialPageRoute(
