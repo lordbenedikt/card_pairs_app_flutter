@@ -19,6 +19,9 @@ var kDarkColorScheme = ColorScheme.fromSeed(
   seedColor: const Color.fromARGB(255, 9, 0, 65),
 );
 
+const String unsplashUrl =
+    "https://unsplash.com/?utm_source=Memory&utm_medium=referral";
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
