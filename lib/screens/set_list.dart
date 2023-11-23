@@ -3,15 +3,13 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:memory/models/card_set.dart';
 import 'package:memory/providers/card_set_provider.dart';
 import 'package:memory/providers/group_provider.dart';
-import 'package:memory/providers/unsplash_provider.dart';
 import 'package:memory/providers/user_provider.dart';
 import 'package:memory/screens/memory.dart';
 import 'package:memory/screens/new_set.dart';
 import 'package:memory/widgets/add_users.dart';
-import 'package:memory/widgets/card_set_dialog.dart';
+import 'package:memory/dialogs/card_set_dialog.dart';
 
 class SetListScreen extends ConsumerWidget {
   const SetListScreen(this.groupUid, {super.key});

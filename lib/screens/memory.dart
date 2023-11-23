@@ -5,13 +5,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/providers/app_settings_provider.dart';
-import 'package:memory/widgets/confirm_dialog.dart';
+import 'package:memory/dialogs/confirm_dialog.dart';
 import 'package:memory/widgets/custom_grid.dart';
 import 'package:flutter/material.dart';
 
 import 'package:memory/widgets/memory_card.dart';
 import 'package:memory/widgets/responsive_icon_button.dart';
-import 'package:memory/widgets/set_size_dialog.dart';
+import 'package:memory/dialogs/settings_dialog.dart';
 
 class MemoryScreen extends ConsumerStatefulWidget {
   const MemoryScreen({
@@ -26,17 +26,19 @@ class MemoryScreen extends ConsumerStatefulWidget {
 }
 
 class _MemoryScreenState extends ConsumerState<MemoryScreen> {
-  bool gameOver = false;
+  bool _gameOver = false;
   Key _key = UniqueKey();
+  int _turnCount = 0;
 
-  void restart() {
+  void restart() async {
     setState(() {
-      gameOver = false;
+      _gameOver = false;
     });
     replaceMemoryWidget();
   }
 
   void replaceMemoryWidget() {
+    // ref.read(appSettingsProvider.notifier).updateAppSettings(turnCounter: 0);
     setState(() {
       _key = UniqueKey();
     });
@@ -58,13 +60,16 @@ class _MemoryScreenState extends ConsumerState<MemoryScreen> {
       backgroundColor: Theme.of(context).colorScheme.background,
       body: Stack(
         children: [
-          MemoryScreenBody(
-            key: _key,
-            cardSet: widget.cardSet,
-            onRestart: restart,
-            onGameOver: () {
-              setState(() => gameOver = true);
-            },
+          LayoutBuilder(
+            builder: (context, constraints) => MemoryScreenBody(
+              key: _key,
+              constraints: constraints,
+              cardSet: widget.cardSet,
+              onRestart: restart,
+              onGameOver: () {
+                setState(() => _gameOver = true);
+              },
+            ),
           ),
           Positioned(
             bottom: 10,
@@ -84,15 +89,41 @@ class _MemoryScreenState extends ConsumerState<MemoryScreen> {
               icon: const Icon(Icons.arrow_back, color: Colors.white70),
             ),
           ),
+          if (ref.watch(appSettingsProvider).turnCount)
+            Positioned(
+              bottom: 10,
+              right: 110,
+              child: IgnorePointer(
+                child: Container(
+                  height: 40,
+                  clipBehavior: Clip.hardEdge,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.6),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Text(
+                      '$_turnCount',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(color: Colors.white70),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           Positioned(
             bottom: 10,
             right: 60,
             child: ResponsiveIconButton(
               onPressed: () {
                 showDialog(
-                    builder: (context) => SetSizeDialog(
+                    builder: (context) => SettingsDialog(
                           onRestart: restart,
                           autoSize: ref.watch(appSettingsProvider).autoSize,
+                          turnCount: ref.watch(appSettingsProvider).turnCount,
                           cols: ref.watch(appSettingsProvider).cols,
                           rows: ref.watch(appSettingsProvider).rows,
                         ),
@@ -129,11 +160,13 @@ class _MemoryScreenState extends ConsumerState<MemoryScreen> {
 class MemoryScreenBody extends ConsumerStatefulWidget {
   const MemoryScreenBody({
     super.key,
+    required this.constraints,
     required this.cardSet,
     required this.onGameOver,
     required this.onRestart,
   });
 
+  final BoxConstraints constraints;
   final CardSet cardSet;
   final void Function() onGameOver;
   final void Function() onRestart;
@@ -149,6 +182,7 @@ class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
   List<int> discoveredCards = [];
   bool doingPairCheck = false;
   bool setupDone = false;
+  bool isLoading = true;
   // bool showFlipAnimation = false;
   bool showFlipAnimation = !(kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
@@ -190,6 +224,7 @@ class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
     }
     // check for pairs, cover cards, clear selection, restart game
     if (activeCardIndices.length == 2 && !doingPairCheck) {
+      // ref.watch(appSettingsProvider.notifier).incrementTurnCount();
       if (foundPair()) {
         discoveredCards.addAll(activeCardIndices);
         activeCardIndices.clear();
@@ -210,11 +245,17 @@ class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
           doingPairCheck = false;
         });
         Future.delayed(const Duration(milliseconds: 900), () {
+          if (!context.mounted) {
+            return;
+          }
           showFlipAnimation
               ? mustFlipDown[0].flipperController.toggleCard()
               : mustFlipDown[0].flipperController.toggleCardWithoutAnimation();
 
           Future.delayed(const Duration(milliseconds: 100), () {
+            if (!context.mounted) {
+              return;
+            }
             showFlipAnimation
                 ? mustFlipDown[1].flipperController.toggleCard()
                 : mustFlipDown[1]
@@ -226,15 +267,15 @@ class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
     }
   }
 
-  void setup(BuildContext context, BoxConstraints constraints) {
+  Future<void> setup() async {
     const minWidth = 150;
     const minHeight = 150;
     final appSettings = ref.watch(appSettingsProvider);
     cols = appSettings.autoSize
-        ? (constraints.maxWidth / minWidth).floor()
+        ? (widget.constraints.maxWidth / minWidth).floor()
         : appSettings.cols;
     rows = appSettings.autoSize
-        ? (constraints.maxHeight / minHeight).floor()
+        ? (widget.constraints.maxHeight / minHeight).floor()
         : appSettings.rows;
     final int numOfPairs = min(
       widget.cardSet.imageUrls.length,
@@ -273,19 +314,32 @@ class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (!setupDone) {
-          setup(context, constraints);
-          setupDone = true;
-        }
-        return cards.isEmpty
-            ? const Center(
-                child: Text('No cards in this set.'),
-              )
-            : CustomGrid(
-                cols: cols,
-                rows: rows,
-                children: cards,
+        return FutureBuilder(
+          future: setup(),
+          builder: (context, snapshots) {
+            if (snapshots.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
               );
+            }
+
+            if (snapshots.connectionState == ConnectionState.done) {
+              return cards.isEmpty
+                  ? const Center(
+                      child: Text('No cards in this set.'),
+                    )
+                  : CustomGrid(
+                      cols: cols,
+                      rows: rows,
+                      children: cards,
+                    );
+            }
+
+            return const Center(
+              child: Text('Setup failed.'),
+            );
+          },
+        );
       },
     );
   }

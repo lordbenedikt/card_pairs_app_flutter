@@ -2,39 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/providers/app_settings_provider.dart';
 
-class SetSizeDialog extends ConsumerStatefulWidget {
-  const SetSizeDialog(
-      {super.key,
-      required this.onRestart,
-      required this.autoSize,
-      required this.cols,
-      required this.rows});
+class SettingsDialog extends ConsumerStatefulWidget {
+  const SettingsDialog({
+    super.key,
+    required this.onRestart,
+    required this.autoSize,
+    required this.turnCount,
+    required this.cols,
+    required this.rows,
+  });
 
   final Function() onRestart;
   final bool autoSize;
+  final bool turnCount;
   final int cols;
   final int rows;
 
   @override
-  ConsumerState<SetSizeDialog> createState() => _SetSizeDialogState();
+  ConsumerState<SettingsDialog> createState() => _SetSizeDialogState();
 }
 
-class _SetSizeDialogState extends ConsumerState<SetSizeDialog> {
+class _SetSizeDialogState extends ConsumerState<SettingsDialog> {
   late bool _autoSize;
+  late bool _turnCount;
   late int _cols;
   late int _rows;
 
   void _confirm() {
     Navigator.of(context).pop();
-    ref
-        .read(appSettingsProvider.notifier)
-        .updateAppSettings(autoSize: _autoSize, cols: _cols, rows: _rows);
+    ref.read(appSettingsProvider.notifier).updateAppSettings(
+        autoSize: _autoSize, turnCount: _turnCount, cols: _cols, rows: _rows);
     widget.onRestart();
   }
 
   @override
   void initState() {
     _autoSize = widget.autoSize;
+    _turnCount = widget.turnCount;
     _cols = widget.cols;
     _rows = widget.rows;
     super.initState();
@@ -57,6 +61,7 @@ class _SetSizeDialogState extends ConsumerState<SetSizeDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownMenu<int>(
+                  width: 140,
                   label: const Text('cols'),
                   initialSelection: _cols,
                   onSelected: (value) {
@@ -74,6 +79,7 @@ class _SetSizeDialogState extends ConsumerState<SetSizeDialog> {
                 ),
                 const SizedBox(width: 20),
                 DropdownMenu<int>(
+                  width: 140,
                   label: const Text('rows'),
                   initialSelection: _rows,
                   onSelected: (value) {
@@ -92,17 +98,34 @@ class _SetSizeDialogState extends ConsumerState<SetSizeDialog> {
               ],
             ),
             const SizedBox(height: 10),
-            SizedBox(
-              width: 160,
-              child: CheckboxListTile(
-                title: const Text('autosize'),
-                value: _autoSize,
-                onChanged: (_) {
-                  setState(() {
-                    _autoSize = !_autoSize;
-                  });
-                },
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  width: 160,
+                  child: CheckboxListTile(
+                    title: const Text('turn count'),
+                    value: _turnCount,
+                    onChanged: (_) {
+                      setState(() {
+                        _turnCount = !_turnCount;
+                      });
+                    },
+                  ),
+                ),
+                SizedBox(
+                  width: 140,
+                  child: CheckboxListTile(
+                    title: const Text('autosize'),
+                    value: _autoSize,
+                    onChanged: (_) {
+                      setState(() {
+                        _autoSize = !_autoSize;
+                      });
+                    },
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 10),
             Row(

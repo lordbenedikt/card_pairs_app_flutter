@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -10,7 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:memory/models/card_set.dart';
 import 'package:memory/models/group.dart';
 import 'package:memory/widgets/circular_image_picker.dart';
-import 'package:memory/widgets/confirm_dialog.dart';
+import 'package:memory/dialogs/confirm_dialog.dart';
 import 'package:memory/widgets/gallery_grid.dart';
 import 'package:uuid/v4.dart';
 

@@ -3,12 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:memory/providers/group_provider.dart';
-import 'package:memory/providers/unsplash_provider.dart';
-import 'package:memory/screens/memory.dart';
 import 'package:memory/screens/profile.dart';
 import 'package:memory/screens/set_list.dart';
 import 'package:memory/screens/new_group.dart';
-import 'package:memory/widgets/random_set_dialog.dart';
+import 'package:memory/dialogs/random_set_dialog.dart';
 
 class GroupListScreen extends ConsumerStatefulWidget {
   const GroupListScreen({super.key});

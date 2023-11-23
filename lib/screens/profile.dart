@@ -70,7 +70,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               children: [
                 Center(
                   child: UserImagePicker(
-                    radius: constraints.maxHeight > 500 ? 120 : 0,
+                    radius: constraints.maxHeight > 300 ? 120 : 0,
                     initialImage:
                         newImageProvider ?? NetworkImage(user!.imageUrl),
                     onPickImage: (pickedImage) {
