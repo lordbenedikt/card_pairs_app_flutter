@@ -101,18 +101,19 @@ class _SetSizeDialogState extends ConsumerState<SettingsDialog> {
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SizedBox(
-                  width: 160,
-                  child: CheckboxListTile(
-                    title: const Text('turn count'),
-                    value: _turnCount,
-                    onChanged: (_) {
-                      setState(() {
-                        _turnCount = !_turnCount;
-                      });
-                    },
+                if (false)
+                  SizedBox(
+                    width: 160,
+                    child: CheckboxListTile(
+                      title: const Text('turn count'),
+                      value: _turnCount,
+                      onChanged: (_) {
+                        setState(() {
+                          _turnCount = !_turnCount;
+                        });
+                      },
+                    ),
                   ),
-                ),
                 SizedBox(
                   width: 140,
                   child: CheckboxListTile(

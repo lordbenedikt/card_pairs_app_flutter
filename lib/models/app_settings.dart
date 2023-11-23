@@ -1,7 +1,7 @@
 class AppSettings {
   AppSettings({
     this.autoSize = true,
-    this.turnCount = true,
+    this.turnCount = false,
     this.cols = 4,
     this.rows = 4,
   });
