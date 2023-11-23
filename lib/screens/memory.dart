@@ -277,11 +277,15 @@ class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
           setup(context, constraints);
           setupDone = true;
         }
-        return CustomGrid(
-          cols: cols,
-          rows: rows,
-          children: cards,
-        );
+        return cards.isEmpty
+            ? const Center(
+                child: Text('No cards in this set.'),
+              )
+            : CustomGrid(
+                cols: cols,
+                rows: rows,
+                children: cards,
+              );
       },
     );
   }
