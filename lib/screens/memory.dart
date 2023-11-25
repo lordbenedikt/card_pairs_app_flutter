@@ -26,14 +26,10 @@ class MemoryScreen extends ConsumerStatefulWidget {
 }
 
 class _MemoryScreenState extends ConsumerState<MemoryScreen> {
-  bool _gameOver = false;
   Key _key = UniqueKey();
   int _turnCount = 0;
 
   void restart() async {
-    setState(() {
-      _gameOver = false;
-    });
     replaceMemoryWidget();
   }
 
@@ -66,9 +62,6 @@ class _MemoryScreenState extends ConsumerState<MemoryScreen> {
               constraints: constraints,
               cardSet: widget.cardSet,
               onRestart: restart,
-              onGameOver: () {
-                setState(() => _gameOver = true);
-              },
             ),
           ),
           Positioned(
@@ -162,13 +155,11 @@ class MemoryScreenBody extends ConsumerStatefulWidget {
     super.key,
     required this.constraints,
     required this.cardSet,
-    required this.onGameOver,
     required this.onRestart,
   });
 
   final BoxConstraints constraints;
   final CardSet cardSet;
-  final void Function() onGameOver;
   final void Function() onRestart;
 
   @override
@@ -229,7 +220,6 @@ class _MemoryScreenBodyState extends ConsumerState<MemoryScreenBody> {
         discoveredCards.addAll(activeCardIndices);
         activeCardIndices.clear();
         if (discoveredCards.length == imageUrls.length) {
-          widget.onGameOver();
           Future.delayed(const Duration(milliseconds: 2000), () {
             widget.onRestart();
           });
