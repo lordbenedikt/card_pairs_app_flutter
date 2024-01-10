@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:memory/models/group.dart';
 import 'package:memory/providers/group_provider.dart';
 import 'package:memory/screens/profile.dart';
 import 'package:memory/screens/set_list.dart';
@@ -80,8 +83,9 @@ class _GroupListScreenState extends ConsumerState<GroupListScreen> {
               );
             }
 
+            List<Group> myGroups;
             if (groups.isNotEmpty) {
-              final myGroups = groups
+              myGroups = groups
                   .where(
                     (group) =>
                         group.members
@@ -89,42 +93,56 @@ class _GroupListScreenState extends ConsumerState<GroupListScreen> {
                         group.uid == '26f220a9-5ebe-467b-836e-37d389045c3f',
                   )
                   .toList();
-              return GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                child: ListView.builder(
-                  itemCount: myGroups.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return ListTile(
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) => const RandomSetDialog());
-                        },
-                        title: Text(
-                          'Generate with Unsplash API',
-                          style:
-                              Theme.of(context).textTheme.titleMedium!.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      );
-                    }
-                    final group = myGroups[index - 1];
+            } else {
+              myGroups = [];
+            }
+            return GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              child: ListView.builder(
+                itemCount: max(2, myGroups.length + 1),
+                itemBuilder: (context, index) {
+                  if (index == 0) {
                     return ListTile(
                       onTap: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => SetListScreen(group.uid)));
+                        showDialog(
+                            context: context,
+                            builder: (context) => const RandomSetDialog());
                       },
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 10,
+                      title: Text(
+                        'Generate with Unsplash API',
+                        style:
+                            Theme.of(context).textTheme.titleMedium!.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                       ),
-                      leading: CircleAvatar(
-                        radius: 30,
-                        backgroundImage: NetworkImage(group.imageUrl),
+                    );
+                  }
+                  if (index == 1 && myGroups.isEmpty) {
+                    return const ListTile(
+                      onTap: null,
+                      title: Center(
+                        child: Text(
+                          "You aren't in any groups. Try creating one.",
+                        ),
                       ),
-                      title: Column(children: [
+                    );
+                  }
+                  final group = myGroups[index - 1];
+                  return ListTile(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => SetListScreen(group.uid)));
+                    },
+                    contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10,
+                      horizontal: 10,
+                    ),
+                    leading: CircleAvatar(
+                      radius: 30,
+                      backgroundImage: NetworkImage(group.imageUrl),
+                    ),
+                    title: Column(
+                      children: [
                         Text(
                           group.title,
                           style:
@@ -132,14 +150,12 @@ class _GroupListScreenState extends ConsumerState<GroupListScreen> {
                                     fontWeight: FontWeight.bold,
                                   ),
                         ),
-                      ]),
-                    );
-                  },
-                ),
-              );
-            } else {
-              return const Center(child: Text("You're not in any group."));
-            }
+                      ],
+                    ),
+                  );
+                },
+              ),
+            );
           },
         ),
       ),
